@@ -33,7 +33,10 @@ body {
   display: flex;
   width: min(100%, 90rem);
   margin: 0 auto;
+  align-items: center;
   flex-direction: column;
+  justify-content: center;
+  text-align: center;
 }
 
 .home__eyebrow,
@@ -47,7 +50,7 @@ body {
 }
 
 .home__eyebrow {
-  margin: 0;
+  margin: 0 0 clamp(2rem, 7vh, 5rem);
 }
 
 .home__eyebrow span {
@@ -57,7 +60,7 @@ body {
 
 h1 {
   max-width: 13ch;
-  margin: auto 0;
+  margin: 0;
   font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(4rem, 11vw, 10.5rem);
   font-weight: 500;
@@ -67,9 +70,10 @@ h1 {
 
 .home__footer {
   display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  gap: 2rem;
+  align-items: center;
+  flex-direction: column;
+  gap: 1.5rem;
+  margin-top: clamp(2rem, 7vh, 5rem);
 }
 
 .home__statement {
@@ -81,17 +85,4 @@ h1 {
 
 .home__status {
   margin: 0;
-  text-align: right;
-}
-
-@media (max-width: 40rem) {
-  .home__footer {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 1.25rem;
-  }
-
-  .home__status {
-    text-align: left;
-  }
 }
