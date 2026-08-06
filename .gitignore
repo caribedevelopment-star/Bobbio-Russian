@@ -28,3 +28,7 @@ next-env.d.ts
 # System files
 .DS_Store
 *.pem
+
+# Python
+__pycache__/
+*.py[cod]

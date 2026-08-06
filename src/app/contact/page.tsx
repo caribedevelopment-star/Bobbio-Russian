@@ -1,0 +1,4 @@
+import type { Metadata } from "next";
+import { identity } from "@/content/site";
+export const metadata: Metadata = { title: "Contact", description: "Contact Alessandro Bobbio Russian in Madrid." };
+export default function Contact() { return <main className="contact-page"><p className="kicker">Contact / Madrid</p><h1>Let’s move an idea<br /><em>from bit to matter.</em></h1><p className="contact-intro">For architectural design, luxury interiors, visualization, spatial technology and bio-design conversations.</p><div className="contact-links"><div><span>Location</span><p>{identity.location}</p></div><div><span>LinkedIn</span><a href={identity.linkedin} target="_blank" rel="noreferrer">bobbiorussian ↗</a></div><div><span>Email</span><p>Address awaiting source confirmation</p></div></div><p className="contact-note">A verified public email and CV file were not present in the repository. LinkedIn is available for professional contact.</p></main>; }
