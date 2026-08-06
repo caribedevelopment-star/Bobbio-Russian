@@ -1,0 +1,6 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { MediaFrame } from "@/components/Media";
+import { projects } from "@/content/site";
+export const metadata: Metadata = { title: "Work", description: "Selected architectural visualization and bio-design research." };
+export default function Work() { const categories = [...new Set(projects.flatMap(p => p.disciplines))]; return <main className="page"><header className="page-hero"><p className="kicker">Work / Selected index</p><h1>Design is a chain<br />of informed decisions.</h1><p>Editorial view and technical index of verified portfolio records.</p></header><section className="work-list">{projects.map((p, i) => <article key={p.slug}><Link href={`/work/${p.slug}`}><span>0{i + 1}</span><MediaFrame media={p.cover} /><div><p>{p.disciplines.join(" · ")}</p><h2>{p.title}</h2><small>{p.subtitle}</small></div></Link></article>)}</section><section className="technical-index section"><p className="section-label">Technical index</p><div className="category-row">{categories.map(x => <span key={x}>{x}</span>)}</div>{projects.map((p, i) => <Link href={`/work/${p.slug}`} key={p.slug}><span>0{i + 1}</span><strong>{p.title}</strong><span>{p.disciplines.join(" / ")}</span><i>↗</i></Link>)}</section></main>; }
