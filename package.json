@@ -3,6 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "media:extract-carrd": "python3 scripts/extract-carrd-media.py",
+    "content:extract-profile": "python3 scripts/extract-profile-pdf.py",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

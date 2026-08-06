@@ -1,17 +1,18 @@
-export default function Home() {
-  return (
-    <main className="home">
-      <div className="home__content">
-        <p className="home__eyebrow">
-          Architectural Designer <span aria-hidden="true">·</span> Luxury
-          Interiors <span aria-hidden="true">·</span> Bio-Designer
-        </p>
-        <h1>Alessandro Bobbio Russian</h1>
-        <div className="home__footer">
-          <p className="home__statement">From Bit to Matter.</p>
-          <p className="home__status">Portfolio in development.</p>
-        </div>
-      </div>
-    </main>
-  );
-}
+import Link from "next/link";
+import { CapabilityExplorer, ConnectedPractices } from "@/components/HomeInteractions";
+import { MediaFrame } from "@/components/Media";
+import { ProjectCard } from "@/components/ProjectModules";
+import { ecosystem, identity, projects } from "@/content/site";
+
+export default function Home() { return <main>
+  <section className="hero"><div className="hero-grid" aria-hidden="true" /><div className="hero-top"><p>{identity.title}</p><span>{identity.location}</span></div><div className="hero-title"><p>Alessandro</p><h1>Bobbio Russian</h1></div><div className="hero-bottom"><div><p className="serif">From Bit to Matter.</p><p>{identity.statement}</p></div><div className="hero-actions"><Link href="#selected-work">View Selected Work</Link><Link href="/practice">Discover the Practice</Link></div></div></section>
+  <section className="section current"><p className="section-label">Current practice / Madrid</p><h2>One practice, from spatial vision to living systems.</h2><div className="columns"><p><b>Architectural Design</b>Luxury interiors, Total Living, premium kitchens and bespoke furniture—through visualization, technical development and project delivery.</p><p><b>Bio-Design</b>Urban Ponics, productive architecture, hydroponic and aeroponic systems, bioclimatic design and digital twins.</p></div></section>
+  <section className="section dark"><div className="section-heading"><p className="section-label">Two connected practices</p><h2>Designing spaces.<br />Designing systems.</h2></div><ConnectedPractices /></section>
+  <section className="section showreel"><div className="section-heading"><p className="section-label">Showreel / Studies</p><h2>Space, systems<br />and representation.</h2></div><div className="showreel-grid">{projects.map((p, i) => <MediaFrame key={p.slug} media={{...p.cover, caption: `${String(i + 1).padStart(2,"0")} — ${p.title}`}} />)}</div></section>
+  <section id="selected-work" className="section work-section"><div className="section-heading"><p className="section-label">Selected work</p><h2>Projects as<br />connected evidence.</h2></div><div className="project-grid">{projects.map((p, i) => <ProjectCard key={p.slug} project={p} index={i} />)}</div><Link className="text-link" href="/work">Open the complete index →</Link></section>
+  <section className="section bit-matter"><p className="section-label">From Bit to Matter / Beyond Rendering</p><h2>Information becomes image.<br />Image becomes experience.</h2><div>{projects[0].process.map((x, i) => <article key={x.label}><span>0{i + 1}</span><h3>{x.label}</h3><p>{x.text}</p></article>)}</div></section>
+  <section className="section"><div className="section-heading"><p className="section-label">Capabilities / Workflow</p><h2>Not a list of tools.<br />A connected way of working.</h2></div><CapabilityExplorer /></section>
+  <section className="section ecosystem"><p className="section-label">Professional ecosystem</p>{ecosystem.map((x, i) => <article key={x.name}><span>{String(i + 1).padStart(2,"0")}</span><h3>{x.name}</h3><b>{x.relation}</b><p>{x.context}</p></article>)}</section>
+  <section className="origins"><p className="section-label">Origins / Profile</p><h2>Born in Caracas.<br />Shaped by Italian roots.<br /><em>Developed in Madrid.</em></h2><Link href="/profile">Read the profile →</Link></section>
+  <section className="contact-band"><p>Have a space, system or idea to develop?</p><h2>Let’s move it<br /><em>from bit to matter.</em></h2><div><span>{identity.location}</span><Link href="/contact">Start a conversation ↗</Link></div></section>
+ </main>; }
