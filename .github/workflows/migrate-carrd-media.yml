@@ -1,0 +1,35 @@
+name: Migrate Carrd media
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "scripts/extract-carrd-media.py"
+      - ".github/workflows/migrate-carrd-media.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Install PDF extraction support
+        run: sudo apt-get update && sudo apt-get install -y poppler-utils
+      - name: Extract public Carrd media
+        run: python3 scripts/extract-carrd-media.py
+      - name: Extract uploaded profile PDF
+        run: python3 scripts/extract-profile-pdf.py
+      - name: Commit migrated web assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/media/carrd src/content/media.ts docs/carrd-media-extraction.md docs/profile-pdf-extraction.md
+          git diff --cached --quiet || git commit -m "chore: migrate public Carrd media"
+          git push
