@@ -1,0 +1,46 @@
+name: Validate portfolio
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [v3]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install
+        run: npm install --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Build
+        run: npm run build
+      - name: Start production server
+        run: |
+          npm run start -- -H 127.0.0.1 -p 3000 > /tmp/bobbio.log 2>&1 &
+          for i in {1..30}; do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then exit 0; fi
+            sleep 1
+          done
+          cat /tmp/bobbio.log
+          exit 1
+      - name: Capture desktop pages
+        run: |
+          mkdir -p screenshots
+          CHROME=$(command -v google-chrome || command -v chromium-browser || command -v chromium)
+          test -n "$CHROME"
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1400 --screenshot=screenshots/home.png http://127.0.0.1:3000/
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1400 --screenshot=screenshots/work.png http://127.0.0.1:3000/work
+          "$CHROME" --headless=new --no-sandbox --disable-gpu --hide-scrollbars --window-size=1440,1400 --screenshot=screenshots/profile.png http://127.0.0.1:3000/profile
+      - name: Upload visual review
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-screenshots
+          path: screenshots
