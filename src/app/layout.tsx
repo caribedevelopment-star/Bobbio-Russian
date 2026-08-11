@@ -1,16 +1,20 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Alessandro Bobbio Russian",
-  description: "Architectural Designer · Luxury Interiors · Bio-Designer",
+  title: "Bobbio Russian — Architectural Designer",
+  description:
+    "Portfolio of Alessandro Bobbio Russian — architectural design, luxury interiors, bio-design and immersive visualization.",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#090b09",
+};
+
+export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
       <body>{children}</body>
