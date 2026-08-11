@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import styles from "./portfolio-enhancements.module.css";
 
 const SKETCHFAB_TOWER =
-  "https://sketchfab.com/models/1accfef6146640308048131fe7f0ca1d/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0";
+  "https://sketchfab.com/models/1accfef6146640308048131fe7f0ca1d/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
 const SKETCHFAB_NFT =
-  "https://sketchfab.com/models/d8f12e0f476247adb94ecf52a1573637/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0";
+  "https://sketchfab.com/models/d8f12e0f476247adb94ecf52a1573637/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
 const VIMEO =
-  "https://player.vimeo.com/video/1211006561?badge=0&autopause=0&player_id=0&app_id=58479";
+  "https://player.vimeo.com/video/1211006561?badge=0&autopause=0&player_id=0&app_id=58479&background=1&autoplay=1&muted=1&loop=1";
 const TWINMOTION =
   "https://twinmotion.unrealengine.com/panorama/RNq6WfMy27Nonz23?lang=es-ES&c=7A9F8E224CB4A881FF5423932245ECBC";
 
@@ -24,6 +25,27 @@ const markers: Marker[] = [
   { lat: 40.42, lon: -3.7, label: "MADRID", kind: "base" },
   { lat: 18.47, lon: -66.12, label: "CARIBE", kind: "travel" },
   { lat: 39.47, lon: -0.38, label: "VALENCIA", kind: "travel" },
+];
+
+const education = [
+  {
+    stage: "01",
+    place: "La Salle · Caracas",
+    title: "School Formation",
+    text: "My first academic environment in Caracas — a foundation built around discipline, structure and curiosity before design became a professional language.",
+  },
+  {
+    stage: "02",
+    place: "Universidad Católica Andrés Bello · UCAB",
+    title: "Civil Engineering Studies",
+    text: "Engineering gave me an analytical lens: systems, structure, technical logic and the habit of understanding how things work before deciding how they should look.",
+  },
+  {
+    stage: "03",
+    place: "IED Madrid",
+    title: "Interior Design",
+    text: "In Madrid, technical thinking met materiality, atmosphere and spatial narrative — the combination that became the core of my current design practice.",
+  },
 ];
 
 function PracticeOrbit() {
@@ -240,7 +262,7 @@ function Globe() {
     };
   }, []);
 
-  return <canvas ref={ref} className="globeCanvas" aria-label="Animated globe showing Venezuela, Italy and Spain" />;
+  return <canvas ref={ref} className="globeCanvas" aria-label="Animated globe showing Venezuela, Italy and Madrid" />;
 }
 
 export default function Home() {
@@ -285,6 +307,7 @@ export default function Home() {
           <a href="#practice">Practice</a>
           <a href="#work">Work</a>
           <a href="#profile">Profile</a>
+          <a href="#education">Education</a>
         </div>
         <a href="#contact" className="navCta"><span>Contact</span><b>↗</b></a>
       </nav>
@@ -307,7 +330,7 @@ export default function Home() {
         </div>
         <div className="heroBottom" data-reveal>
           <a href="#practice">Scroll to discover ↓</a>
-          <span>Venezuelan-born · Italian · Based in Spain</span>
+          <span>Venezuelan + Italian · Living and working in Madrid</span>
         </div>
       </section>
 
@@ -349,28 +372,37 @@ export default function Home() {
         <article className="urbanCase">
           <div className="urbanTitle" data-reveal>
             <div><p className="micro accentText">FEATURED CASE STUDY · BIO-DESIGN</p><h3>URBAN<br />PONICS</h3></div>
-            <p>A living-system project explored through film, interactive objects, system design and an immersive spatial environment. Move through the case study rather than looking at a static gallery.</p>
+            <p>A living-system project explored through film, interactive objects, system design and an immersive spatial environment. The media now enters the experience already active, rather than feeling like separate players.</p>
           </div>
 
           <div className="chapter chapterFilm" data-reveal>
             <div className="chapterMeta"><span>ACT I</span><span>THE FILM</span><span>01 / 04</span></div>
-            <div className="media mediaFilm">
-              <iframe title="Urban Ponics film" src={VIMEO} allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowFullScreen />
+            <div className={styles.mediaStage}>
+              <div className="media mediaFilm">
+                <iframe title="Urban Ponics film" src={VIMEO} allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" allowFullScreen />
+              </div>
+              <div className={styles.liveBadge}><i />Playing · muted</div>
             </div>
           </div>
 
           <div className="chapterGrid">
             <div className="chapter" data-reveal>
               <div className="chapterMeta"><span>ACT II</span><span>THE OBJECT</span><span>02 / 04</span></div>
-              <div className="media mediaModel">
-                <iframe title="Urban Ponics Tower interactive 3D" src={SKETCHFAB_TOWER} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="lazy" />
+              <div className={styles.mediaStage}>
+                <div className="media mediaModel">
+                  <iframe title="Urban Ponics Tower interactive 3D" src={SKETCHFAB_TOWER} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="eager" />
+                </div>
+                <div className={styles.liveBadge}><i />Live 3D · loaded</div>
               </div>
               <div className="chapterCopy"><b>Tower</b><span>Interactive 3D · Sketchfab</span></div>
             </div>
             <div className="chapter chapterOffset" data-reveal>
               <div className="chapterMeta"><span>ACT III</span><span>THE SYSTEM</span><span>03 / 04</span></div>
-              <div className="media mediaModel">
-                <iframe title="Urban Ponics NFT System interactive 3D" src={SKETCHFAB_NFT} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="lazy" />
+              <div className={styles.mediaStage}>
+                <div className="media mediaModel">
+                  <iframe title="Urban Ponics NFT System interactive 3D" src={SKETCHFAB_NFT} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="eager" />
+                </div>
+                <div className={styles.liveBadge}><i />Live 3D · loaded</div>
               </div>
               <div className="chapterCopy"><b>NFT System</b><span>Interactive 3D · Sketchfab</span></div>
             </div>
@@ -378,8 +410,11 @@ export default function Home() {
 
           <div className="chapter chapterPanorama" data-reveal>
             <div className="chapterMeta"><span>ACT IV</span><span>THE SPACE</span><span>04 / 04</span></div>
-            <div className="media mediaPano">
-              <iframe title="Urban Ponics Twinmotion panorama" src={TWINMOTION} allow="fullscreen; accelerometer; gyroscope" allowFullScreen loading="lazy" />
+            <div className={styles.mediaStage}>
+              <div className="media mediaPano">
+                <iframe title="Urban Ponics Twinmotion panorama" src={TWINMOTION} allow="fullscreen; accelerometer; gyroscope" allowFullScreen loading="lazy" />
+              </div>
+              <div className={styles.liveBadge}><i />360º environment</div>
             </div>
             <div className="chapterCopy"><b>Enter the environment</b><span>360º panorama · Twinmotion</span></div>
           </div>
@@ -395,13 +430,33 @@ export default function Home() {
       <section id="profile" className="profile sectionPad sectionFx">
         <div className="profileHeadline" data-reveal>
           <p className="sectionIndex darkIndex">03 / PROFILE</p>
-          <h2>My point of view was built <em>between places.</em></h2>
+          <h2>Venezuelan by origin. <em>Italian by identity.</em> Based in Madrid.</h2>
         </div>
         <div className="profileGrid">
           <div className="profileCopy" data-reveal>
-            <p className="profileLead">I’m Alessandro Bobbio Russian, a Venezuelan-born Italian architectural designer and creative project lead based in Madrid.</p>
-            <p>I grew up with one cultural reference, inherited another, and built my professional life in a third. Travel has made that mix wider: cities, materials, ways of living and different ideas of what “home” means all feed the way I design.</p>
-            <p>My work sits between architectural rigor and visual emotion. I care about how something is built, how a team gets it there, and what it feels like to move through it.</p>
+            <p className="profileLead">I’m Alessandro Bobbio Russian — Venezuelan by birth, Italian by citizenship and family identity, living and working in Madrid.</p>
+            <p>Caracas is my origin and first cultural lens. Italy is part of who I am, not simply a passport. Madrid is my current home and the place where my professional practice has grown.</p>
+            <p>That combination shapes the way I design: Latin warmth, European rigor and an international curiosity strengthened by travel, cities, materials and different ideas of what “home” can mean.</p>
+
+            <p className={styles.identityPrelude}>ORIGIN / IDENTITY / BASE</p>
+            <div className={styles.identityCards}>
+              <article className={styles.identityCard}>
+                <span>Origin</span>
+                <b>Caracas, Venezuela</b>
+                <p>The place I come from — emotional root, culture and first way of seeing space.</p>
+              </article>
+              <article className={styles.identityCard}>
+                <span>Identity</span>
+                <b>Italian</b>
+                <p>Citizenship and family identity, connected to a European culture of craft, detail and permanence.</p>
+              </article>
+              <article className={styles.identityCard}>
+                <span>Current Base</span>
+                <b>Madrid, Spain</b>
+                <p>Where I live, work and continue building an international design practice.</p>
+              </article>
+            </div>
+
             <div className="facts">
               <div><span>ORIGIN</span><b>Caracas, Venezuela</b></div>
               <div><span>CITIZENSHIP</span><b>Italian</b></div>
@@ -411,15 +466,37 @@ export default function Home() {
           </div>
           <div className="globeWrap" data-reveal>
             <Globe />
-            <div className="globeLabel globeLabelA"><span>10°N</span>ORIGIN</div>
-            <div className="globeLabel globeLabelB"><span>41°N</span>IDENTITY</div>
+            <div className="globeLabel globeLabelA"><span>10°N</span>VENEZUELA · ORIGIN</div>
+            <div className="globeLabel globeLabelB"><span>41°N</span>ITALY · IDENTITY</div>
+            <div className={`globeLabel ${styles.globeMadrid}`}><span>40°N</span>MADRID · BASE</div>
             <div className="globeHint">DRAG THE PLANET ↔</div>
           </div>
         </div>
       </section>
 
+      <section id="education" className={`sectionPad sectionFx ${styles.education}`}>
+        <div className={styles.educationHeader} data-reveal>
+          <p className="sectionIndex">04 / EDUCATION</p>
+          <h2>A chronology of <em>how I learned to think.</em></h2>
+        </div>
+
+        <div className={styles.timeline} data-reveal>
+          <div className={styles.timelineRail} aria-hidden="true" />
+          {education.map((item) => (
+            <article className={styles.timelineItem} key={item.stage}>
+              <div className={styles.timelineNode}><span>{item.stage}</span></div>
+              <div className={styles.timelineCard}>
+                <p className={styles.timelinePlace}>{item.place}</p>
+                <h3>{item.title}</h3>
+                <p>{item.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
       <section className="manifesto sectionPad sectionFx">
-        <p className="sectionIndex" data-reveal>04 / APPROACH</p>
+        <p className="sectionIndex" data-reveal>05 / APPROACH</p>
         <div className="manifestoGrid">
           <h2 data-reveal>Design should feel <em>inevitable</em>, not decorated.</h2>
           <p data-reveal>I look for the point where function, leadership, technology, matter and emotion stop competing and become one thing.</p>
