@@ -11,7 +11,12 @@ const VIMEO =
 const TWINMOTION =
   "https://twinmotion.unrealengine.com/panorama/RNq6WfMy27Nonz23?lang=es-ES&c=7A9F8E224CB4A881FF5423932245ECBC";
 
-type Marker = { lat: number; lon: number; label: string; kind: "home" | "identity" | "base" | "travel" };
+type Marker = {
+  lat: number;
+  lon: number;
+  label: string;
+  kind: "home" | "identity" | "base" | "travel";
+};
 
 const markers: Marker[] = [
   { lat: 10.48, lon: -66.9, label: "CARACAS", kind: "home" },
@@ -20,6 +25,56 @@ const markers: Marker[] = [
   { lat: 18.47, lon: -66.12, label: "CARIBE", kind: "travel" },
   { lat: 39.47, lon: -0.38, label: "VALENCIA", kind: "travel" },
 ];
+
+function PracticeOrbit() {
+  return (
+    <div className="practiceOrbit" data-reveal>
+      <div className="orbitIntro">
+        <p className="micro">ONE PRACTICE / THREE MODES</p>
+        <h3>My value is in the <em>overlap.</em></h3>
+        <p>
+          I move between spatial design, living systems and project leadership. The strongest work happens where those three disciplines start informing each other.
+        </p>
+      </div>
+      <div
+        className="roleDiagram"
+        role="img"
+        aria-label="Living circular diagram connecting Architectural and Luxury Design, Bio-Designer and Creative Project Lead"
+      >
+        <svg viewBox="0 0 600 600" aria-hidden="true">
+          <circle className="roleRing roleRingOuter" cx="300" cy="300" r="238" />
+          <circle className="roleRing roleRingInner" cx="300" cy="300" r="162" />
+          <path className="roleEnergy roleEnergyA" d="M300 72 C430 74 526 179 526 300 C526 422 428 524 300 526" />
+          <path className="roleEnergy roleEnergyB" d="M300 526 C170 526 74 424 74 300 C74 178 171 74 300 72" />
+          <path className="roleTriangle" d="M300 105 L112 458 L488 458 Z" />
+          <circle className="rolePulse rolePulseA" cx="300" cy="105" r="6" />
+          <circle className="rolePulse rolePulseB" cx="112" cy="458" r="6" />
+          <circle className="rolePulse rolePulseC" cx="488" cy="458" r="6" />
+        </svg>
+
+        <div className="roleNode roleNodeA">
+          <span>01</span>
+          <b>Architectural +<br />Luxury Design</b>
+        </div>
+        <div className="roleNode roleNodeB">
+          <span>02</span>
+          <b>Bio-Designer</b>
+        </div>
+        <div className="roleNode roleNodeC">
+          <span>03</span>
+          <b>Creative<br />Project Lead</b>
+        </div>
+        <div className="roleCore">
+          <span>BR</span>
+          <small>ONE CREATIVE<br />DIRECTION</small>
+        </div>
+        <i className="orbitParticle particleA" />
+        <i className="orbitParticle particleB" />
+        <i className="orbitParticle particleC" />
+      </div>
+    </div>
+  );
+}
 
 function Globe() {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -86,7 +141,7 @@ function Globe() {
           a.lon + (b.lon - a.lon) * t,
         ]);
       }
-      line(pts, radius, "#d8ff62", 0.72);
+      line(pts, radius, "#c7d7a0", 0.76);
     };
 
     const draw = () => {
@@ -96,8 +151,8 @@ function Globe() {
       const cy = height / 2;
 
       const halo = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.35, 0, cx, cy, r * 1.25);
-      halo.addColorStop(0, "rgba(216,255,98,.24)");
-      halo.addColorStop(0.45, "rgba(120,140,100,.10)");
+      halo.addColorStop(0, "rgba(199,215,160,.23)");
+      halo.addColorStop(0.45, "rgba(132,147,119,.10)");
       halo.addColorStop(1, "rgba(5,7,6,0)");
       ctx.fillStyle = halo;
       ctx.beginPath();
@@ -105,26 +160,26 @@ function Globe() {
       ctx.fill();
 
       const globe = ctx.createRadialGradient(cx - r * 0.35, cy - r * 0.4, r * 0.05, cx, cy, r);
-      globe.addColorStop(0, "#253129");
-      globe.addColorStop(0.58, "#111612");
-      globe.addColorStop(1, "#050706");
+      globe.addColorStop(0, "#334034");
+      globe.addColorStop(0.58, "#161c17");
+      globe.addColorStop(1, "#070907");
       ctx.fillStyle = globe;
       ctx.beginPath();
       ctx.arc(cx, cy, r, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = "rgba(255,255,255,.12)";
+      ctx.strokeStyle = "rgba(232,226,216,.14)";
       ctx.stroke();
 
       ctx.lineWidth = 0.65;
       for (let lat = -75; lat <= 75; lat += 15) {
         const pts: Array<[number, number]> = [];
         for (let lon = -180; lon <= 180; lon += 3) pts.push([lat, lon]);
-        line(pts, r, "rgba(255,255,255,.11)");
+        line(pts, r, "rgba(232,226,216,.11)");
       }
       for (let lon = -180; lon < 180; lon += 15) {
         const pts: Array<[number, number]> = [];
         for (let lat = -90; lat <= 90; lat += 3) pts.push([lat, lon]);
-        line(pts, r, "rgba(255,255,255,.08)");
+        line(pts, r, "rgba(232,226,216,.075)");
       }
 
       const caracas = markers[0];
@@ -138,12 +193,12 @@ function Globe() {
         const p = project(m.lat, m.lon, r);
         if (p.z <= 0) return;
         const radius = m.kind === "base" ? 5 : 3.5;
-        ctx.fillStyle = m.kind === "travel" ? "rgba(216,255,98,.55)" : "#d8ff62";
+        ctx.fillStyle = m.kind === "travel" ? "rgba(199,215,160,.55)" : "#c7d7a0";
         ctx.beginPath();
         ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
         ctx.fill();
         if (m.kind !== "travel") {
-          ctx.fillStyle = "rgba(245,243,236,.86)";
+          ctx.fillStyle = "rgba(238,232,222,.88)";
           ctx.font = "700 9px Arial";
           ctx.fillText(m.label, p.x + 10, p.y + 3);
         }
@@ -192,7 +247,7 @@ export default function Home() {
   useEffect(() => {
     const reveal = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add("is-visible")),
-      { threshold: 0.14 },
+      { threshold: 0.12, rootMargin: "0px 0px -8%" },
     );
     document.querySelectorAll("[data-reveal]").forEach((node) => reveal.observe(node));
 
@@ -202,15 +257,27 @@ export default function Home() {
       document.documentElement.style.setProperty("--px", String(e.clientX / window.innerWidth - 0.5));
       document.documentElement.style.setProperty("--py", String(e.clientY / window.innerHeight - 0.5));
     };
+
+    const scroll = () => {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = max > 0 ? window.scrollY / max : 0;
+      document.documentElement.style.setProperty("--scroll", String(progress));
+    };
+
     window.addEventListener("pointermove", move, { passive: true });
+    window.addEventListener("scroll", scroll, { passive: true });
+    scroll();
+
     return () => {
       reveal.disconnect();
       window.removeEventListener("pointermove", move);
+      window.removeEventListener("scroll", scroll);
     };
   }, []);
 
   return (
     <main>
+      <div className="scrollProgress" aria-hidden="true" />
       <div className="cursorGlow" aria-hidden="true" />
       <nav className="nav">
         <a href="#top" className="monogram" aria-label="Back to top">BR</a>
@@ -219,12 +286,12 @@ export default function Home() {
           <a href="#work">Work</a>
           <a href="#profile">Profile</a>
         </div>
-        <a href="#contact" className="navCta">Contact ↗</a>
+        <a href="#contact" className="navCta"><span>Contact</span><b>↗</b></a>
       </nav>
 
-      <section id="top" className="hero">
+      <section id="top" className="hero sectionFx">
         <div className="heroTop" data-reveal>
-          <span>Architectural Designer</span>
+          <span>Architectural + Luxury Designer</span>
           <span>Madrid · 2026</span>
         </div>
         <div className="heroStage">
@@ -235,7 +302,7 @@ export default function Home() {
           </h1>
           <div className="heroOrb" aria-hidden="true"><span /></div>
           <p className="heroStatement" data-reveal>
-            Architecture, high-end interiors and bio-design shaped through technology, material intelligence and atmosphere.
+            Architectural and luxury design, bio-design and creative project leadership — connected by technology, material intelligence and atmosphere.
           </p>
         </div>
         <div className="heroBottom" data-reveal>
@@ -245,32 +312,35 @@ export default function Home() {
       </section>
 
       <div className="ticker" aria-hidden="true">
-        <div>ARCHITECTURE — INTERIORS — BIO-DESIGN — DIGITAL CRAFT — IMMERSIVE VISUALISATION — ARCHITECTURE — INTERIORS — BIO-DESIGN — DIGITAL CRAFT — IMMERSIVE VISUALISATION —</div>
+        <div>ARCHITECTURAL + LUXURY DESIGN — BIO-DESIGN — CREATIVE PROJECT LEAD — DIGITAL CRAFT — IMMERSIVE VISUALISATION — ARCHITECTURAL + LUXURY DESIGN — BIO-DESIGN — CREATIVE PROJECT LEAD —</div>
       </div>
 
-      <section id="practice" className="practice sectionPad">
+      <section id="practice" className="practice sectionPad sectionFx">
         <div className="sectionIntro" data-reveal>
           <p className="sectionIndex">01 / PRACTICE</p>
-          <h2>I work across <em>three worlds</em> without treating them as the same thing.</h2>
+          <h2>Three roles. <em>One point of view.</em></h2>
         </div>
+
+        <PracticeOrbit />
+
         <div className="discipline disciplineLight" data-reveal>
           <div className="disciplineNo">01</div>
-          <div><p className="micro">SPACE / SYSTEM / PROPORTION</p><h3>Architectural<br />Design</h3></div>
-          <p>Concept development, spatial strategy, technical thinking and digital workflows. I move from the first diagram to a space that can actually be built.</p>
+          <div><p className="micro">SPACE / MATERIAL / DETAIL</p><h3>Architectural +<br />Luxury Design</h3></div>
+          <p>Spatial concepts, high-end interiors, kitchens, furniture and technical thinking resolved as one coherent system — from first diagram to buildable detail.</p>
         </div>
-        <div className="discipline" data-reveal>
+        <div className="discipline disciplineBio" data-reveal>
           <div className="disciplineNo">02</div>
-          <div><p className="micro">MATERIAL / DETAIL / ATMOSPHERE</p><h3>Luxury<br />Interiors</h3></div>
-          <p>High-end residential interiors with a strong focus on kitchens, furniture, material selection and precision detailing. The goal is not decoration; it is coherence.</p>
+          <div><p className="micro">LIVING / DIGITAL / EXPERIMENTAL</p><h3>Bio-<br />Designer</h3></div>
+          <p>Living systems, digital fabrication, 3D and research-led design. Biology and technology become active design materials rather than presentation layers.</p>
         </div>
-        <div className="discipline disciplineAccent" data-reveal>
+        <div className="discipline disciplineLead" data-reveal>
           <div className="disciplineNo">03</div>
-          <div><p className="micro">LIVING / DIGITAL / EXPERIMENTAL</p><h3>Bio-Design<br />+ Digital</h3></div>
-          <p>Living systems, 3D, real-time rendering, immersive visualization and research-led design. Technology is part of the design language, not a final presentation layer.</p>
+          <div><p className="micro">VISION / COORDINATION / DELIVERY</p><h3>Creative<br />Project Lead</h3></div>
+          <p>I connect concept, client, technical teams and visual storytelling so a strong idea survives the entire process — not only the first presentation.</p>
         </div>
       </section>
 
-      <section id="work" className="work sectionPad">
+      <section id="work" className="work sectionPad sectionFx">
         <div className="workHeader" data-reveal>
           <p className="sectionIndex">02 / SELECTED WORK</p>
           <h2>Projects are not thumbnails.<br /><span>They are worlds.</span></h2>
@@ -278,7 +348,7 @@ export default function Home() {
 
         <article className="urbanCase">
           <div className="urbanTitle" data-reveal>
-            <div><p className="micro lime">FEATURED CASE STUDY · BIO-DESIGN</p><h3>URBAN<br />PONICS</h3></div>
+            <div><p className="micro accentText">FEATURED CASE STUDY · BIO-DESIGN</p><h3>URBAN<br />PONICS</h3></div>
             <p>A living-system project explored through film, interactive objects, system design and an immersive spatial environment. Move through the case study rather than looking at a static gallery.</p>
           </div>
 
@@ -322,16 +392,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="profile" className="profile sectionPad">
+      <section id="profile" className="profile sectionPad sectionFx">
         <div className="profileHeadline" data-reveal>
           <p className="sectionIndex darkIndex">03 / PROFILE</p>
           <h2>My point of view was built <em>between places.</em></h2>
         </div>
         <div className="profileGrid">
           <div className="profileCopy" data-reveal>
-            <p className="profileLead">I’m Alessandro Bobbio Russian, a Venezuelan-born Italian architectural designer based in Madrid.</p>
+            <p className="profileLead">I’m Alessandro Bobbio Russian, a Venezuelan-born Italian architectural designer and creative project lead based in Madrid.</p>
             <p>I grew up with one cultural reference, inherited another, and built my professional life in a third. Travel has made that mix wider: cities, materials, ways of living and different ideas of what “home” means all feed the way I design.</p>
-            <p>My work sits between architectural rigor and visual emotion. I care about how something is built, but also about what it feels like to move through it.</p>
+            <p>My work sits between architectural rigor and visual emotion. I care about how something is built, how a team gets it there, and what it feels like to move through it.</p>
             <div className="facts">
               <div><span>ORIGIN</span><b>Caracas, Venezuela</b></div>
               <div><span>CITIZENSHIP</span><b>Italian</b></div>
@@ -348,20 +418,20 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="manifesto sectionPad">
+      <section className="manifesto sectionPad sectionFx">
         <p className="sectionIndex" data-reveal>04 / APPROACH</p>
         <div className="manifestoGrid">
           <h2 data-reveal>Design should feel <em>inevitable</em>, not decorated.</h2>
-          <p data-reveal>I look for the point where function, technology, matter and emotion stop competing and become one thing.</p>
+          <p data-reveal>I look for the point where function, leadership, technology, matter and emotion stop competing and become one thing.</p>
         </div>
       </section>
 
-      <footer id="contact" className="footer sectionPad">
+      <footer id="contact" className="footer sectionPad sectionFx">
         <div className="footerTop" data-reveal>
-          <p>Architecture · Interiors · Bio-design</p>
+          <p>Architecture · Luxury · Bio-design · Creative direction</p>
           <a href="mailto:hello@bobbiorussian.com">LET’S<br />MAKE IT<br /><em>TANGIBLE.</em> ↗</a>
         </div>
-        <div className="footerBottom"><b>BOBBIO RUSSIAN</b><span>Architectural Designer · Madrid</span><span>© 2026</span></div>
+        <div className="footerBottom"><b>BOBBIO RUSSIAN</b><span>Architectural Designer · Creative Project Lead · Madrid</span><span>© 2026</span></div>
       </footer>
     </main>
   );
