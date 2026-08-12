@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import RenderGallery, { type RenderItem } from "../../components/RenderGallery";
+import Lexicon from "../../components/Lexicon";
 import styles from "./renders.module.css";
 
-export const metadata: Metadata = { title: "Renders", description: "Interior visualisation gallery by Bobbio Russian." };
+export const metadata: Metadata = { title: "Visions", description: "Interior visualisation gallery by Bobbio Russian." };
 
 const items: RenderItem[] = [
   { id: "1nJ_L1eYlSzVySvarYt0_nNi55HwnlfIM", series: "Series 1277", frame: "Kitchen study", alt: "Warm contemporary kitchen interior render" },
@@ -21,12 +22,12 @@ export default function RendersPage() {
   return (
     <main className="pageEnter pagePadTop">
       <header className={styles.header}>
-        <p className="eyebrow" data-reveal>03 / RENDERS</p>
-        <h1 data-reveal>Rendered<br /><em>space.</em></h1>
-        <div data-reveal><p>A curated gallery built from the Drive folder you shared. Images are isolated to this route and loaded progressively, so Home stays light.</p><span>10 selected frames · lazy loaded</span></div>
+        <p className="eyebrow" data-reveal>03 / <Lexicon term="visions" /></p>
+        <h1 data-reveal><Lexicon term="visions" /><br /><em>Before matter.</em></h1>
+        <div data-reveal><p>These images are not the end of the process. They are a laboratory for light, proportion, material and atmosphere — a way to inhabit a room before it exists.</p><span>Selected visual studies · interior environments</span></div>
       </header>
       <section className={styles.gallery} data-reveal><RenderGallery items={items} /></section>
-      <section className={styles.note}><p>The full source archive remains in Google Drive; this page requests web-sized previews only when needed.</p></section>
+      <section className={styles.note}><p>A visual archive in progress: fragments of kitchens, interiors and material studies seen through different levels of realism and mood.</p></section>
     </main>
   );
 }
