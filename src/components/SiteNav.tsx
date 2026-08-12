@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Lexicon, { LanguageCode, type LexiconTerm } from "./Lexicon";
 
-const items = [
-  ["/", "Home"],
-  ["/practice", "Practice"],
-  ["/work", "Work"],
-  ["/renders", "Renders"],
-  ["/profile", "Profile"],
-] as const;
+const items: Array<{ href: string; term: LexiconTerm }> = [
+  { href: "/practice", term: "convergence" },
+  { href: "/work", term: "matter" },
+  { href: "/renders", term: "visions" },
+  { href: "/profile", term: "genesis" },
+];
 
 export default function SiteNav() {
   const pathname = usePathname();
@@ -18,15 +18,20 @@ export default function SiteNav() {
       <nav className="siteNav" aria-label="Primary navigation">
         <Link href="/" prefetch={false} className="monogram" aria-label="Bobbio Russian home">BR</Link>
         <div className="siteNavLinks">
-          {items.slice(1).map(([href, label]) => (
-            <Link key={href} href={href} prefetch={false} className={pathname === href ? "isActive" : undefined}>{label}</Link>
+          {items.map(item => (
+            <Link key={item.href} href={item.href} prefetch={false} className={pathname === item.href ? "isActive" : undefined}>
+              <Lexicon term={item.term} />
+            </Link>
           ))}
         </div>
-        <a className="navContact" href="mailto:hello@bobbiorussian.com">Contact ↗</a>
+        <div className="navRight"><span className="languageCode"><LanguageCode /></span><a className="navContact" href="mailto:hello@bobbiorussian.com">Contact ↗</a></div>
       </nav>
       <nav className="mobileDock" aria-label="Mobile navigation">
-        {items.map(([href, label]) => (
-          <Link key={href} href={href} prefetch={false} className={pathname === href ? "isActive" : undefined}>{label}</Link>
+        <Link href="/" prefetch={false} className={pathname === "/" ? "isActive" : undefined}>BR</Link>
+        {items.map(item => (
+          <Link key={item.href} href={item.href} prefetch={false} className={pathname === item.href ? "isActive" : undefined}>
+            <Lexicon term={item.term} />
+          </Link>
         ))}
       </nav>
     </>
