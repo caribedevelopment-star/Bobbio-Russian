@@ -24,7 +24,7 @@ export default function SiteNav() {
             </Link>
           ))}
         </div>
-        <div className="navRight"><span className="languageCode"><LanguageCode /></span><a className="navContact" href="mailto:hello@bobbiorussian.com">Contact ↗</a></div>
+        <a className="navContact" href="mailto:hello@bobbiorussian.com"><span style={{ opacity: .55, marginRight: 7 }}><LanguageCode /></span>Contact ↗</a>
       </nav>
       <nav className="mobileDock" aria-label="Mobile navigation">
         <Link href="/" prefetch={false} className={pathname === "/" ? "isActive" : undefined}>BR</Link>
