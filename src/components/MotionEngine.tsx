@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import transition from "./RouteVeil.module.css";
 
 export default function MotionEngine() {
   const pathname = usePathname();
@@ -41,5 +42,11 @@ export default function MotionEngine() {
     };
   }, [pathname]);
 
-  return null;
+  return (
+    <div key={pathname} className={transition.veil} aria-hidden="true">
+      <span className={transition.axis} />
+      <span className={transition.cross} />
+      <span className={transition.node} />
+    </div>
+  );
 }
