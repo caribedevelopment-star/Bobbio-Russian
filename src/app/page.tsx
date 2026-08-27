@@ -2,6 +2,7 @@ import Link from "next/link";
 import Lexicon, { type LexiconTerm } from "../components/Lexicon";
 import SpatialCore from "../components/SpatialCore";
 import styles from "./home.module.css";
+import enhanced from "./landing-enhancements.module.css";
 
 const portals: Array<{
   no: string;
@@ -77,7 +78,7 @@ export default function Home() {
           <p className={styles.statement} data-reveal>Architecture, interiors and living systems explored through drawing, modelling, material, light and immersive digital space.</p>
         </div>
 
-        <div className={styles.designSequence} data-reveal>
+        <div className={enhanced.designSequence} data-reveal>
           <span>01 DRAW</span><i />
           <span>02 MODEL</span><i />
           <span>03 MATERIAL</span><i />
