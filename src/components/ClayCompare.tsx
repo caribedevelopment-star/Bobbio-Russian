@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import styles from "./ClayCompare.module.css";
 
 type Props = {
@@ -13,10 +13,10 @@ export default function ClayCompare({ src, alt, label = "Spatial study" }: Props
   const [split, setSplit] = useState(48);
 
   return (
-    <div className={styles.compare} style={{ "--split": `${split}%` } as React.CSSProperties}>
-      <img className={styles.final} src={src} alt={alt} decoding="async" />
+    <div className={styles.compare} style={{ "--split": `${split}%` } as CSSProperties}>
+      <img className={styles.final} src={src} alt={alt} decoding="async" loading="lazy" />
       <div className={styles.clayLayer}>
-        <img className={styles.clay} src={src} alt="" aria-hidden="true" decoding="async" />
+        <img className={styles.clay} src={src} alt="" aria-hidden="true" decoding="async" loading="lazy" />
       </div>
       <div className={styles.divider} aria-hidden="true"><span /></div>
       <div className={`${styles.label} ${styles.labelClay}`}><b>CLAY</b><span>form · proportion · light</span></div>
