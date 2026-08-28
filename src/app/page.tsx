@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Lexicon, { type LexiconTerm } from "../components/Lexicon";
 import SpatialCore from "../components/SpatialCore";
+import ArchitecturalOverlay from "../components/ArchitecturalOverlay";
 import styles from "./home.module.css";
 import enhanced from "./landing-enhancements.module.css";
 
@@ -70,12 +71,13 @@ export default function Home() {
         </div>
 
         <SpatialCore />
+        <ArchitecturalOverlay />
 
         <div className={styles.stage}>
           <p className={styles.kicker} data-reveal>From bit to matter.</p>
           <h1 aria-label="Bobbio Russian"><span>BOBBIO</span><span>RUSSIAN</span></h1>
           <div className={styles.heroGrid} aria-hidden="true"><span /><span /><span /><span /></div>
-          <p className={styles.statement} data-reveal>Architecture, interiors and living systems explored through drawing, modelling, material, light and immersive digital space.</p>
+          <p className={styles.statement} data-reveal>Architectural design, interiors and living systems — developed through drawing, modelling, material, light and immersive digital space. Start with the four chapters below.</p>
         </div>
 
         <div className={enhanced.designSequence} data-reveal>
@@ -87,7 +89,7 @@ export default function Home() {
         </div>
 
         <div className={styles.chapterMap} data-reveal>
-          <div className={styles.chapterMapIntro}><span>PORTFOLIO STRUCTURE</span><b>04 SPATIAL CHAPTERS</b></div>
+          <div className={styles.chapterMapIntro}><span>PORTFOLIO PLAN</span><b>CHOOSE A ROOM</b></div>
           {portals.map(portal => (
             <Link prefetch={false} href={portal.href} key={`map-${portal.href}`} className={styles.chapterMapItem}>
               <span>{portal.no}</span>
@@ -99,7 +101,7 @@ export default function Home() {
 
         <div className={styles.heroBottom} data-reveal>
           <span>Venezuelan · Italian · Madrid-based</span>
-          <span>Enter the spatial index ↓</span>
+          <span>Scroll ↓ / Choose a chapter</span>
         </div>
       </section>
 
