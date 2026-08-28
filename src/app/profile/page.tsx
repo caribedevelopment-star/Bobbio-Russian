@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import IdentityGlobe from "../../components/IdentityGlobe";
+import GlobePrompt from "../../components/GlobePrompt";
 import Lexicon from "../../components/Lexicon";
 import styles from "./profile.module.css";
 
@@ -32,7 +33,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className={styles.globePanel} data-reveal>
-            <div className={styles.globe}><IdentityGlobe /><span className={styles.drag}>DRAG THE PLANET ↔</span></div>
+            <div className={styles.globe}><IdentityGlobe /><GlobePrompt /></div>
             <div className={styles.legend}>
               <div><i className={styles.heritage} /><span><b>ROOT / IDENTITY</b><small>Caracas → Madrid · Caracas → Italy</small></span></div>
               <div><i className={styles.journey} /><span><b>JOURNEYS / WORK</b><small>Madrid → Miami · Madrid → Netherlands</small></span></div>
