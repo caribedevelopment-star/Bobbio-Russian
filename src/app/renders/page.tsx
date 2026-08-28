@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RenderGallery, { type RenderItem } from "../../components/RenderGallery";
 import ClayCompare from "../../components/ClayCompare";
+import ToolConstellation from "../../components/ToolConstellation";
 import Lexicon from "../../components/Lexicon";
 import styles from "./renders.module.css";
 import process from "./process.module.css";
@@ -62,6 +63,8 @@ const tools = [
 export default function RendersPage() {
   return (
     <main className="pageEnter pagePadTop">
+      <ToolConstellation />
+
       <header className={styles.header}>
         <p className="eyebrow" data-reveal>03 / <Lexicon term="visions" /></p>
         <h1 data-reveal><Lexicon term="visions" /><br /><em>Before matter.</em></h1>
@@ -114,9 +117,9 @@ export default function RendersPage() {
 
       <section className={process.tools}>
         <div className={process.toolsHeader} data-reveal>
-          <p className="eyebrow">TOOLCHAIN</p>
+          <p className="eyebrow">TOOLCHAIN / DETAIL</p>
           <h2>Different tools.<br />One design decision.</h2>
-          <p>Software is selected by what needs to be understood: drawing, coordination, modelling, material, light, real-time movement or final fidelity.</p>
+          <p>The 3D workshop above shows the ecosystem. Here the role of every tool becomes explicit: drawing, coordination, modelling, material, light, real-time movement or final fidelity.</p>
         </div>
         <div className={process.toolGrid} data-reveal>
           {tools.map(([no, name, text]) => <article key={name} className={process.tool}><span>{no}</span><h3>{name}</h3><p>{text}</p></article>)}
