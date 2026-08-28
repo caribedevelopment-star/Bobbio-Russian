@@ -6,10 +6,10 @@ type Language = "en" | "es" | "fr" | "it";
 export type LexiconTerm = "home" | "convergence" | "matter" | "visions" | "genesis";
 
 const dictionary: Record<Language, Record<LexiconTerm, string>> = {
-  en: { home: "Threshold", convergence: "Convergence", matter: "Matter in Motion", visions: "Visions", genesis: "Genesis" },
-  es: { home: "Umbral", convergence: "Convergencia", matter: "Materia en Movimiento", visions: "Visiones", genesis: "Génesis" },
-  fr: { home: "Seuil", convergence: "Convergence", matter: "Matière en Mouvement", visions: "Visions", genesis: "Genèse" },
-  it: { home: "Soglia", convergence: "Convergenza", matter: "Materia in Movimento", visions: "Visioni", genesis: "Genesi" },
+  en: { home: "Threshold", convergence: "Atelier", matter: "Cultivated Matter", visions: "Studies in Light", genesis: "Provenance" },
+  es: { home: "Umbral", convergence: "Atelier", matter: "Cultivated Matter", visions: "Studies in Light", genesis: "Provenance" },
+  fr: { home: "Seuil", convergence: "Atelier", matter: "Cultivated Matter", visions: "Studies in Light", genesis: "Provenance" },
+  it: { home: "Soglia", convergence: "Atelier", matter: "Cultivated Matter", visions: "Studies in Light", genesis: "Provenance" },
 };
 
 const languages: Language[] = ["en", "es", "fr", "it"];
