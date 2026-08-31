@@ -7,6 +7,7 @@ import HomeLivingField from "./HomeLivingField";
 import HomeWorldCanvas from "./HomeWorldCanvas";
 import ToolMoleculeCanvas from "./ToolMoleculeCanvas";
 import styles from "./HomeJourney.module.css";
+import architectural from "./HomeJourneyArchitectural.module.css";
 import molecule from "./ToolMolecules.module.css";
 
 type Family = "design" | "visual" | "creative" | "code" | "data";
@@ -140,10 +141,10 @@ export default function HomeJourney() {
   const layouts = activeFamily ? toolLayouts[activeFamily] : [];
 
   return (
-    <section id="home-journey" ref={root} className={`${styles.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
-      <div className={styles.sticky}>
-        <HomeLivingField className={styles.livingField} />
-        <HomeWorldCanvas className={styles.world} mode="journey" step={step} />
+    <section id="home-journey" ref={root} className={`${styles.journey} ${architectural.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
+      <div className={`${styles.sticky} ${architectural.stage}`}>
+        <HomeLivingField className={`${styles.livingField} ${architectural.living}`} />
+        <HomeWorldCanvas className={`${styles.world} ${architectural.world}`} mode="journey" step={step} />
         <ArchitecturalNotation variant="journey" />
         <div className={styles.vignette} aria-hidden="true" />
         <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /></div>
@@ -155,14 +156,14 @@ export default function HomeJourney() {
           {steps.map((label, index) => <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined}><i /><span>{String(index).padStart(2, "0")}</span><b>{label}</b></button>)}
         </nav>
 
-        <div className={styles.copy} aria-live="polite">
+        <div className={`${styles.copy} ${architectural.copy}`} aria-live="polite">
           <div className={styles.copyRule}><i /><span>SECTION / {String(step).padStart(2, "0")}</span></div>
           {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>Structure.<br /><em>Then life.</em></h2><span>The same architectural field carries the whole journey. Beams, sections, drawing geometry and tools reorganise as the practice moves from line to space, image, code and data.</span></>}
           {activeFamily && <><p>{familyMeta[activeFamily].index} / {familyMeta[activeFamily].eyebrow}</p><h2>{familyMeta[activeFamily].title}<br /><em>{familyMeta[activeFamily].emphasis}</em></h2><span>{familyMeta[activeFamily].body}</span></>}
           {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The structural field clears and becomes four rooms. Choose the part of the practice you want to inspect.</span></>}
         </div>
 
-        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
+        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${architectural.tools} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
           <ToolMoleculeCanvas className={molecule.canvas} family={activeFamily} hovered={hoveredTool} />
           <div className={`${styles.toolHeader} ${molecule.header}`}><span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span><b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b></div>
           <div className={`${styles.tools} ${molecule.cluster}`}>
@@ -186,7 +187,7 @@ export default function HomeJourney() {
         <div className={styles.worldMeta} aria-hidden="true"><span>A—A / STRUCTURAL WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small></div>
         <div className={styles.measure} aria-hidden="true"><i /><span>8.40 m</span><i /></div>
 
-        <div id="portfolio-menu" className={styles.chapterMenu} aria-hidden={step !== 6}>
+        <div id="portfolio-menu" className={`${styles.chapterMenu} ${architectural.chapter}`} aria-hidden={step !== 6}>
           <div className={styles.menuIntro}><span>SELECT A ROOM</span><b>04 CHAPTERS / ONE PRACTICE</b></div>
           {chapters.map(([no, name, href, note, meta]) => <Link href={href} prefetch={false} key={href} tabIndex={step === 6 ? 0 : -1}><span>{no}</span><div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div><b>↗</b><i className={styles.menuOrganism}><em /><em /><em /></i></Link>)}
         </div>
