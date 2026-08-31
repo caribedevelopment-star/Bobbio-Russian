@@ -10,12 +10,13 @@ import molecule from "./ToolMolecules.module.css";
 
 type Family = "design" | "visual" | "creative" | "code" | "data";
 type Tool = { name: string; short: string; note: string; family: Family; company: string; src?: string };
+type Layout = { x: number; y: number; size: number; mx: number; my: number; ms: number; rot: number };
 
 const tools: Tool[] = [
   { name: "AutoCAD", short: "AC", note: "draw / dimension", family: "design", company: "Autodesk", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
   { name: "Revit", short: "RV", note: "BIM / coordinate", family: "design", company: "Autodesk", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
   { name: "SketchUp", short: "SU", note: "model / iterate", family: "design", company: "Trimble", src: "https://cdn.simpleicons.org/sketchup/FFFFFF" },
-  { name: "BIM Systems", short: "BIM", note: "information / delivery", family: "design", company: "Open BIM", src: "https://cdn.simpleicons.org/building/FFFFFF" },
+  { name: "BIM Systems", short: "BIM", note: "information / delivery", family: "design", company: "Open BIM" },
   { name: "D5 Render", short: "D5", note: "material / light", family: "visual", company: "D5", src: "https://www.d5render.com/favicon.ico" },
   { name: "Twinmotion", short: "TM", note: "immersive / 360°", family: "visual", company: "Epic Games", src: "https://www.twinmotion.com/favicon.ico" },
   { name: "Unreal Engine", short: "UE", note: "realtime / cinematic", family: "visual", company: "Epic Games", src: "https://cdn.simpleicons.org/unrealengine/FFFFFF" },
@@ -33,6 +34,39 @@ const tools: Tool[] = [
   { name: "Supabase", short: "SB", note: "database / realtime", family: "data", company: "Supabase", src: "https://cdn.simpleicons.org/supabase/FFFFFF" },
   { name: "Excel", short: "XL", note: "analyse / organise", family: "data", company: "Microsoft", src: "https://cdn.simpleicons.org/microsoftexcel/FFFFFF" },
 ];
+
+const toolLayouts: Record<Family, Layout[]> = {
+  design: [
+    { x: 33, y: 36, size: 126, mx: 27, my: 33, ms: 92, rot: -7 },
+    { x: 59, y: 27, size: 98, mx: 67, my: 29, ms: 76, rot: 5 },
+    { x: 43, y: 63, size: 112, mx: 30, my: 69, ms: 84, rot: 3 },
+    { x: 70, y: 58, size: 88, mx: 70, my: 67, ms: 70, rot: -5 },
+  ],
+  visual: [
+    { x: 27, y: 43, size: 94, mx: 25, my: 35, ms: 72, rot: -4 },
+    { x: 43, y: 26, size: 128, mx: 67, my: 28, ms: 86, rot: 6 },
+    { x: 68, y: 34, size: 104, mx: 24, my: 67, ms: 80, rot: -6 },
+    { x: 36, y: 68, size: 116, mx: 69, my: 66, ms: 88, rot: 4 },
+    { x: 69, y: 67, size: 84, mx: 49, my: 51, ms: 68, rot: -2 },
+  ],
+  creative: [
+    { x: 29, y: 36, size: 102, mx: 26, my: 34, ms: 76, rot: -9 },
+    { x: 49, y: 24, size: 122, mx: 67, my: 29, ms: 88, rot: 7 },
+    { x: 72, y: 43, size: 88, mx: 24, my: 68, ms: 70, rot: -3 },
+    { x: 37, y: 69, size: 112, mx: 69, my: 67, ms: 82, rot: 5 },
+    { x: 63, y: 67, size: 96, mx: 50, my: 51, ms: 72, rot: -7 },
+  ],
+  code: [
+    { x: 34, y: 35, size: 124, mx: 27, my: 35, ms: 92, rot: -6 },
+    { x: 67, y: 39, size: 100, mx: 69, my: 35, ms: 78, rot: 5 },
+    { x: 51, y: 67, size: 136, mx: 49, my: 69, ms: 96, rot: 2 },
+  ],
+  data: [
+    { x: 31, y: 48, size: 104, mx: 25, my: 37, ms: 82, rot: -4 },
+    { x: 52, y: 28, size: 126, mx: 70, my: 35, ms: 94, rot: 6 },
+    { x: 69, y: 64, size: 92, mx: 49, my: 69, ms: 74, rot: -5 },
+  ],
+};
 
 const familyMeta: Record<Family, { index: string; title: string; emphasis: string; eyebrow: string; body: string }> = {
   design: { index: "01", title: "Draw", emphasis: "coordinate.", eyebrow: "ARCHITECTURE + BIM", body: "Lines become constraints, dimensions become relationships and the model starts carrying information." },
@@ -78,8 +112,7 @@ export default function HomeJourney() {
       const rect = el.getBoundingClientRect();
       const travel = Math.max(1, el.offsetHeight - window.innerHeight);
       const p = Math.max(0, Math.min(1, -rect.top / travel));
-      const scaled = p * 7;
-      const nextStep = Math.min(6, Math.floor(scaled));
+      const nextStep = Math.min(6, Math.floor(p * 7));
       el.style.setProperty("--journey", `${p}`);
       if (progressLine.current) progressLine.current.style.transform = `scaleX(${p})`;
       if (progressReadout.current) progressReadout.current.textContent = `${String(Math.round(p * 100)).padStart(3, "0")}%`;
@@ -103,6 +136,7 @@ export default function HomeJourney() {
 
   const activeFamily: Family | null = step === 1 ? "design" : step === 2 ? "visual" : step === 3 ? "creative" : step === 4 ? "code" : step === 5 ? "data" : null;
   const activeTools = activeFamily ? tools.filter((tool) => tool.family === activeFamily) : [];
+  const layouts = activeFamily ? toolLayouts[activeFamily] : [];
 
   return (
     <section id="home-journey" ref={root} className={`${styles.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
@@ -121,9 +155,9 @@ export default function HomeJourney() {
 
         <div className={styles.copy} aria-live="polite">
           <div className={styles.copyRule}><i /><span>SECTION / {String(step).padStart(2, "0")}</span></div>
-          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>One practice.<br /><em>Many instruments.</em></h2><span>The architectural world stays alive while each tool family changes the behaviour of the system around it.</span></>}
+          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>Structure.<br /><em>Organism.</em></h2><span>A single architectural world carries the whole journey: beams, sections, geometry and living systems change as the practice moves from drawing to computation.</span></>}
           {activeFamily && <><p>{familyMeta[activeFamily].index} / {familyMeta[activeFamily].eyebrow}</p><h2>{familyMeta[activeFamily].title}<br /><em>{familyMeta[activeFamily].emphasis}</em></h2><span>{familyMeta[activeFamily].body}</span></>}
-          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The guided sequence resolves into four rooms. Pick the part of the practice you want to explore.</span></>}
+          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The world opens into four rooms. Pick the part of the practice you want to explore.</span></>}
         </div>
 
         <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
@@ -131,9 +165,15 @@ export default function HomeJourney() {
           <div className={`${styles.toolHeader} ${molecule.header}`}><span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span><b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b></div>
           <div className={`${styles.tools} ${molecule.cluster}`}>
             {activeTools.map((tool, index) => {
-              const angle = -90 + (360 / Math.max(1, activeTools.length)) * index;
+              const layout = layouts[index] ?? layouts[0];
+              const interaction = ["magnet", "ripple", "shear", "bloom", "vortex"][index % 5];
+              const toolStyle = layout ? {
+                "--x": `${layout.x}%`, "--y": `${layout.y}%`, "--size": `${layout.size}px`,
+                "--mx": `${layout.mx}%`, "--my": `${layout.my}%`, "--msize": `${layout.ms}px`,
+                "--rot": `${layout.rot}deg`, "--delay": `${index * -0.72}s`,
+              } as React.CSSProperties : undefined;
               return (
-                <article key={tool.name} className={`${styles.tool} ${molecule.tool}`} style={{ "--angle": `${angle}deg`, "--delay": `${index * -0.72}s` } as React.CSSProperties} onPointerEnter={() => setHoveredTool(index)} onPointerLeave={() => setHoveredTool(-1)}>
+                <article key={tool.name} data-interaction={interaction} className={`${styles.tool} ${molecule.tool}`} style={toolStyle} onPointerEnter={() => setHoveredTool(index)} onPointerLeave={() => setHoveredTool(-1)}>
                   <BrandOrb tool={tool} />
                 </article>
               );
