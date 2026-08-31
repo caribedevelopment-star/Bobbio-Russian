@@ -4,6 +4,7 @@ import LazyEmbed from "../../components/LazyEmbed";
 import Lexicon from "../../components/Lexicon";
 import UrbanSystemFlow from "../../components/UrbanSystemFlow";
 import styles from "./work.module.css";
+import refine from "./work-refinement.module.css";
 
 export const metadata: Metadata = { title: "Cultivated Matter", description: "Urban Ponics immersive case study by Bobbio Russian." };
 
@@ -22,26 +23,26 @@ const visualFrames = [
 export default function WorkPage() {
   return (
     <main className="pageEnter pagePadTop">
-      <header className={styles.header}>
+      <header className={`${styles.header} ${refine.header}`}>
         <p className="eyebrow" data-reveal>02 / <Lexicon term="matter" /></p>
         <h1 data-reveal><Lexicon term="matter" /><br /><em>Urban Ponics.</em></h1>
         <p data-reveal>A bio-design project read through atmosphere, living systems, project imagery and interactive objects. The page moves from feeling the project to understanding how it works.</p>
       </header>
 
-      <section className={styles.filmSection}>
+      <section className={`${styles.filmSection} ${refine.film}`}>
         <div className={styles.sectionLead} data-reveal>
           <div><span>01</span><p>FILM / ATMOSPHERE</p></div>
           <h2>The project<br /><em>before explanation.</em></h2>
           <p>Movement, sound and rhythm establish the emotional territory first. The film is the entrance — not the documentation.</p>
         </div>
-        <div className={styles.filmFrame} data-reveal>
+        <div className={`${styles.filmFrame} ${refine.filmFrame}`} data-reveal>
           <div className={styles.filmCoordinates}><span>URBAN PONICS</span><span>MOVING IMAGE · 16:9</span></div>
           <LazyEmbed title="Urban Ponics film" src={FILM} kind="film" status="Film · atmosphere" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" />
         </div>
         <UrbanSystemFlow />
       </section>
 
-      <section className={styles.narrative}>
+      <section className={`${styles.narrative} ${refine.narrative}`}>
         <div className={styles.narrativeIndex} data-reveal><span>03</span><i /><b>THE IDEA / SYSTEM</b></div>
         <div className={styles.narrativeStatement} data-reveal><p>“Cities should not only consume landscapes. They can become productive landscapes themselves.”</p></div>
         <div className={styles.narrativeGrid}>
@@ -49,18 +50,18 @@ export default function WorkPage() {
           <article data-reveal><span>HOW</span><h3>Modular by design.</h3><p>The greenhouse, tower and NFT system operate as a family: scalable pieces capable of adapting to climate, crop and available space.</p></article>
           <article data-reveal><span>MY ROLE</span><h3>Designing the translation.</h3><p>From digital objects and spatial visualisation to the project language, the work connects system logic with an experience people can understand.</p></article>
         </div>
-        <div className={styles.systemDrawing} aria-hidden="true"><span /><span /><span /><i /><b /></div>
+        <div className={`${styles.systemDrawing} ${refine.systemDrawing}`} aria-hidden="true"><span /><span /><span /><i /><b /></div>
       </section>
 
-      <section className={styles.visualSection}>
+      <section className={`${styles.visualSection} ${refine.visual}`}>
         <div className={styles.sectionLead} data-reveal>
           <div><span>04</span><p>PROJECT FRAMES / VISUAL WORLD</p></div>
           <h2>A system needs<br /><em>a visual language.</em></h2>
           <p>These frames are treated as editorial plates rather than thumbnails: city, agriculture, product and identity are composed as one ecosystem.</p>
         </div>
-        <div className={styles.visualRail}>
+        <div className={`${styles.visualRail} ${refine.visualRail}`}>
           {visualFrames.map((frame, index) => (
-            <figure className={`${styles.visualFrame} ${index % 2 ? styles.visualOffset : ""}`} key={frame.id} data-reveal>
+            <figure className={`${styles.visualFrame} ${refine.visualFrame} ${index % 2 ? styles.visualOffset : ""}`} key={frame.id} data-reveal>
               <div className={styles.visualImage}><img src={thumb(frame.id, 2200)} alt={`Urban Ponics ${frame.title}`} loading={index < 2 ? "eager" : "lazy"} decoding="async" /><span className={styles.frameMarks} /></div>
               <figcaption><i>{frame.no}</i><div><b>{frame.title}</b><small>{frame.caption}</small></div><em>PLATE {String(index + 1).padStart(2,"0")}</em></figcaption>
             </figure>
@@ -68,7 +69,7 @@ export default function WorkPage() {
         </div>
       </section>
 
-      <section className={styles.catalogue}>
+      <section className={`${styles.catalogue} ${refine.catalogue}`}>
         <div className={styles.catalogueHeader} data-reveal>
           <div><span>05</span><p>3D CATALOGUE / OBJECTS</p></div>
           <h2>Touch the<br /><em>system itself.</em></h2>
@@ -77,12 +78,12 @@ export default function WorkPage() {
         <div className={styles.catalogueGrid}>
           <article data-reveal>
             <div className={styles.modelMeta}><span>OBJECT / UP—01</span><b>TOWER</b><i>Interactive 3D</i></div>
-            <div className={styles.modelStage}><div className={styles.modelHud}><span>DRAG ↔ ROTATE</span><span>SCROLL / PINCH · ZOOM</span><b>LIVE 3D</b></div><LazyEmbed title="Urban Ponics Tower interactive 3D" src={TOWER} kind="model" status="Tower · live 3D" allow="autoplay; fullscreen; xr-spatial-tracking" /></div>
+            <div className={`${styles.modelStage} ${refine.modelStage}`}><div className={styles.modelHud}><span>DRAG ↔ ROTATE</span><span>SCROLL / PINCH · ZOOM</span><b>LIVE 3D</b></div><LazyEmbed title="Urban Ponics Tower interactive 3D" src={TOWER} kind="model" status="Tower · live 3D" allow="autoplay; fullscreen; xr-spatial-tracking" /></div>
             <p>A vertical growing object conceived as architecture, product and biological infrastructure at the same time.</p>
           </article>
           <article className={styles.catalogueOffset} data-reveal>
             <div className={styles.modelMeta}><span>SYSTEM / UP—02</span><b>NFT SYSTEM</b><i>Interactive 3D</i></div>
-            <div className={styles.modelStage}><div className={styles.modelHud}><span>DRAG ↔ ROTATE</span><span>SCROLL / PINCH · ZOOM</span><b>LIVE 3D</b></div><LazyEmbed title="Urban Ponics NFT System interactive 3D" src={NFT} kind="model" status="NFT System · live 3D" allow="autoplay; fullscreen; xr-spatial-tracking" /></div>
+            <div className={`${styles.modelStage} ${refine.modelStage}`}><div className={styles.modelHud}><span>DRAG ↔ ROTATE</span><span>SCROLL / PINCH · ZOOM</span><b>LIVE 3D</b></div><LazyEmbed title="Urban Ponics NFT System interactive 3D" src={NFT} kind="model" status="NFT System · live 3D" allow="autoplay; fullscreen; xr-spatial-tracking" /></div>
             <p>The nutrient-film system exposes the technical logic behind the living layer — infrastructure made visible.</p>
           </article>
         </div>
