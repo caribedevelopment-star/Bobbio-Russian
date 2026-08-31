@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import RenderGallery, { type RenderItem } from "../../components/RenderGallery";
 import ClayCompare from "../../components/ClayCompare";
+import RenderLightSequence, { type LightSequenceItem } from "../../components/RenderLightSequence";
 import Lexicon from "../../components/Lexicon";
 import styles from "./renders.module.css";
 import process from "./process.module.css";
@@ -38,7 +39,11 @@ const items: RenderItem[] = [
   { id: "1uiK8gZZwwkGn70W-V4UoWg_V_fnkwy8M", series: "Study 1254", frame: "Frame 04", alt: "Interior visualisation from study 1254" },
 ];
 
-const reel = [items[1], items[9], items[17]];
+const lightSequence: LightSequenceItem[] = [
+  { src: thumb(items[1].id, 2400), title: "Framed warmth.", meta: "RESIDENCE 1283 / ATMOSPHERE 01", note: "Warm material depth, controlled contrast and a camera position that lets the architecture hold the image before decoration does." },
+  { src: thumb(items[9].id, 2400), title: "Quiet daylight.", meta: "RESIDENCE 1280 / ATMOSPHERE 02", note: "A quieter scene where linear geometry, daylight and timber define the rhythm. The image is treated as a study of proportion and calm." },
+  { src: thumb(items[17].id, 2400), title: "Light as section.", meta: "STUDY 1267 / ATMOSPHERE 03", note: "The light is used to read depth, thresholds and mass. Rendering becomes another way of drawing a section through the space." },
+];
 
 const workflow = [
   { no: "01", title: "Draw", meta: "PLAN · SECTION · DETAIL", text: "Plans, sections, dimensions and technical relationships establish the logic before the image exists." },
@@ -57,18 +62,7 @@ export default function RendersPage() {
         <div data-reveal><p>A visual archive, but also a record of how a space develops. The image is only the last layer of a process that begins with drawing, proportion and spatial decisions.</p><span>26 selected frames · process + final imagery</span></div>
       </header>
 
-      <section className={styles.reel} data-reveal>
-        <div className={styles.reelTop}><span>VISUAL REEL / 03 FRAGMENTS</span><b>LUXURY INTERIORS · LIGHT STUDIES</b><i>SCROLL ↓</i></div>
-        <div className={styles.reelFrames}>
-          {reel.map((item, index) => (
-            <figure key={item.id} className={styles.reelFrame}>
-              <img src={thumb(item.id, 2000)} alt={item.alt} loading="eager" decoding="async" />
-              <figcaption><span>0{index + 1}</span><b>{item.series}</b><small>{item.frame}</small></figcaption>
-            </figure>
-          ))}
-        </div>
-        <div className={styles.reelLine} aria-hidden="true"><span /></div>
-      </section>
+      <RenderLightSequence items={lightSequence} />
 
       <section className={process.process}>
         <div className={process.processHeader} data-reveal>
