@@ -3,60 +3,59 @@
 import { useEffect, useRef } from "react";
 import * as THREE from "three";
 
-type Props = { className?: string; mode?: "hero" | "journey"; step?: number };
+type Props = {
+  className?: string;
+  mode?: "hero" | "journey";
+  step?: number;
+};
 
-type Beam = THREE.Mesh<THREE.BoxGeometry, THREE.Material>;
+const cameraStates = [
+  { p: [0.3, 0.65, 11.7], t: [0.25, 0.05, -0.35], fov: 38 },
+  { p: [2.25, 1.15, 9.8], t: [0.35, 0.1, -0.25], fov: 36 },
+  { p: [-2.1, 0.9, 9.2], t: [-0.1, 0.15, -0.2], fov: 35 },
+  { p: [0.35, 2.45, 8.85], t: [0.2, 0.15, -0.25], fov: 34 },
+  { p: [2.6, 0.15, 8.7], t: [0.35, -0.05, -0.1], fov: 35 },
+  { p: [-2.45, 1.35, 9.1], t: [-0.25, 0.1, -0.25], fov: 36 },
+  { p: [0.15, 0.75, 11.9], t: [0, 0, -0.4], fov: 39 },
+] as const;
 
-type CameraState = { position: [number, number, number]; target: [number, number, number]; fov: number };
-
-const cameraStates: CameraState[] = [
-  { position: [1.25, 1.25, 11.8], target: [0.45, 0.15, -0.2], fov: 38 },
-  { position: [2.45, 1.0, 10.2], target: [0.3, 0.05, -0.45], fov: 36 },
-  { position: [-2.05, 1.45, 9.6], target: [0.15, 0.2, -0.35], fov: 37 },
-  { position: [0.45, 2.65, 9.2], target: [0.1, 0.4, -0.5], fov: 39 },
-  { position: [2.75, 0.3, 8.9], target: [0.4, -0.05, -0.45], fov: 38 },
-  { position: [-2.4, 1.05, 9.3], target: [-0.2, 0.15, -0.55], fov: 37 },
-  { position: [0.2, 1.05, 12.4], target: [0.1, 0.15, -0.6], fov: 39 },
-];
-
-function vec(values: readonly number[]) {
+function vector(values: readonly number[]) {
   return new THREE.Vector3(values[0], values[1], values[2]);
 }
 
-function beamBetween(a: THREE.Vector3, b: THREE.Vector3, width: number, material: THREE.Material): Beam {
+function beamBetween(a: THREE.Vector3, b: THREE.Vector3, width: number, material: THREE.Material) {
   const direction = b.clone().sub(a);
-  const beam = new THREE.Mesh(new THREE.BoxGeometry(width, width, direction.length()), material) as Beam;
-  beam.position.copy(a).add(b).multiplyScalar(0.5);
-  beam.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), direction.normalize());
-  return beam;
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, width, direction.length()), material);
+  mesh.position.copy(a).add(b).multiplyScalar(0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), direction.clone().normalize());
+  return mesh;
 }
 
-function line(points: THREE.Vector3[], color: number, opacity: number) {
-  return new THREE.Line(
-    new THREE.BufferGeometry().setFromPoints(points),
-    new THREE.LineBasicMaterial({ color, transparent: true, opacity }),
-  );
+function lineBetween(a: THREE.Vector3, b: THREE.Vector3, material: THREE.LineBasicMaterial) {
+  return new THREE.Line(new THREE.BufferGeometry().setFromPoints([a, b]), material);
 }
 
-function dimensionLine(a: THREE.Vector3, b: THREE.Vector3, tick: THREE.Vector3, color: number) {
-  const group = new THREE.Group();
-  group.add(line([a, b], color, 0.2));
-  const tickA = tick.clone().multiplyScalar(0.12);
-  const tickB = tick.clone().multiplyScalar(-0.12);
-  group.add(line([a.clone().add(tickA), a.clone().add(tickB)], color, 0.28));
-  group.add(line([b.clone().add(tickA), b.clone().add(tickB)], color, 0.28));
-  return group;
+function rectangleLines(width: number, height: number, material: THREE.LineBasicMaterial) {
+  const hw = width / 2;
+  const hh = height / 2;
+  const geometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-hw, -hh, 0),
+    new THREE.Vector3(hw, -hh, 0),
+    new THREE.Vector3(hw, hh, 0),
+    new THREE.Vector3(-hw, hh, 0),
+    new THREE.Vector3(-hw, -hh, 0),
+  ]);
+  return new THREE.Line(geometry, material);
 }
 
-function pythagoreanDiagram(size: number, color: number, opacity: number) {
-  const h = size * 0.72;
-  const a = new THREE.Vector3(-size * 0.5, -h * 0.5, 0);
-  const b = new THREE.Vector3(size * 0.5, -h * 0.5, 0);
-  const c = new THREE.Vector3(size * 0.5, h * 0.5, 0);
-  const group = new THREE.Group();
-  group.add(line([a, b, c, a], color, opacity));
-  group.add(line([new THREE.Vector3(size * 0.31, -h * 0.5, 0), new THREE.Vector3(size * 0.31, -h * 0.31, 0), new THREE.Vector3(size * 0.5, -h * 0.31, 0)], color, opacity * 0.75));
-  return group;
+function rightTriangle(size: number, material: THREE.LineBasicMaterial) {
+  const geometry = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(-size * 0.5, -size * 0.36, 0),
+    new THREE.Vector3(size * 0.5, -size * 0.36, 0),
+    new THREE.Vector3(size * 0.5, size * 0.39, 0),
+    new THREE.Vector3(-size * 0.5, -size * 0.36, 0),
+  ]);
+  return new THREE.Line(geometry, material);
 }
 
 export default function HomeWorldCanvas({ className, mode = "hero", step = 0 }: Props) {
@@ -68,14 +67,13 @@ export default function HomeWorldCanvas({ className, mode = "hero", step = 0 }: 
     const host = mount.current;
     if (!host) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const compact = window.matchMedia("(max-width: 760px)").matches;
-
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x06080a, compact ? 0.078 : 0.045);
+    scene.fog = new THREE.FogExp2(0x06080a, compact ? 0.073 : 0.045);
 
-    const camera = new THREE.PerspectiveCamera(compact ? 47 : 38, 1, 0.1, 100);
-    camera.position.set(compact ? 0.15 : 1.25, compact ? 1.35 : 1.25, compact ? 11.2 : 11.8);
+    const camera = new THREE.PerspectiveCamera(compact ? 46 : 38, 1, 0.1, 80);
+    camera.position.set(compact ? 0 : 0.3, compact ? 1.15 : 0.65, compact ? 12.2 : 11.7);
 
     const renderer = new THREE.WebGLRenderer({ antialias: !compact, alpha: true, powerPreference: "high-performance" });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact ? 1.25 : 1.7));
@@ -84,225 +82,189 @@ export default function HomeWorldCanvas({ className, mode = "hero", step = 0 }: 
     host.appendChild(renderer.domElement);
 
     const world = new THREE.Group();
-    const primary = new THREE.Group();
-    const secondary = new THREE.Group();
-    const drawings = new THREE.Group();
-    const dimensions = new THREE.Group();
+    const frame = new THREE.Group();
+    const drawing = new THREE.Group();
+    const surfaces = new THREE.Group();
+    const trusses = new THREE.Group();
     const atmosphere = new THREE.Group();
+    world.add(frame, drawing, surfaces, trusses, atmosphere);
     scene.add(world);
-    world.add(atmosphere, secondary, primary, drawings, dimensions);
 
-    const ivory = new THREE.MeshStandardMaterial({ color: 0xe9e2d6, metalness: 0.18, roughness: 0.42, transparent: true, opacity: 0.2 });
-    const steel = new THREE.MeshStandardMaterial({ color: 0x69737a, metalness: 0.78, roughness: 0.28, transparent: true, opacity: 0.33 });
-    const champagne = new THREE.MeshStandardMaterial({ color: 0xd6c28f, metalness: 0.48, roughness: 0.32, transparent: true, opacity: 0.42, emissive: 0x352a15, emissiveIntensity: 0.18 });
-    const sage = new THREE.MeshStandardMaterial({ color: 0x9cab94, metalness: 0.36, roughness: 0.42, transparent: true, opacity: 0.22 });
-    const glass = new THREE.MeshPhysicalMaterial({ color: 0x89aab2, roughness: 0.16, transmission: 0.2, transparent: true, opacity: 0.075, side: THREE.DoubleSide });
+    const ivory = new THREE.MeshStandardMaterial({ color: 0xe8e0d1, metalness: 0.3, roughness: 0.46, transparent: true, opacity: 0.22 });
+    const steel = new THREE.MeshStandardMaterial({ color: 0x7d858a, metalness: 0.82, roughness: 0.28, transparent: true, opacity: 0.31 });
+    const champagne = new THREE.MeshStandardMaterial({ color: 0xd6c28f, metalness: 0.62, roughness: 0.26, transparent: true, opacity: 0.46, emissive: 0x302612, emissiveIntensity: 0.22 });
+    const sage = new THREE.MeshStandardMaterial({ color: 0x9cab94, metalness: 0.42, roughness: 0.4, transparent: true, opacity: 0.22 });
+    const glass = new THREE.MeshPhysicalMaterial({ color: 0x83aab7, roughness: 0.12, transparent: true, opacity: 0.07, transmission: 0.18, side: THREE.DoubleSide });
 
-    // Three structural bays: this is the visual anchor of the whole Home.
-    const bayX = [-2.9, 0, 2.9];
-    const zFront = 0.9;
-    const zBack = -2.45;
-    const floor = -1.65;
-    const roof = 2.15;
+    const warmLine = new THREE.LineBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.22 });
+    const coolLine = new THREE.LineBasicMaterial({ color: 0x7eabba, transparent: true, opacity: 0.16 });
+    const faintLine = new THREE.LineBasicMaterial({ color: 0xe8e0d1, transparent: true, opacity: 0.105 });
 
-    bayX.forEach((x, index) => {
-      const mat = index === 1 ? champagne : steel;
-      primary.add(beamBetween(new THREE.Vector3(x, floor, zFront), new THREE.Vector3(x, roof, zFront), index === 1 ? 0.065 : 0.045, mat));
-      primary.add(beamBetween(new THREE.Vector3(x, floor, zBack), new THREE.Vector3(x, roof, zBack), 0.038, index === 2 ? sage : ivory));
-      primary.add(beamBetween(new THREE.Vector3(x, roof, zFront), new THREE.Vector3(x, roof, zBack), 0.044, mat));
+    // Primary structural bays — a legible architectural frame, not a central object.
+    const xs = [-4.25, -2.1, 0.05, 2.2, 4.35];
+    const zFront = 1.15;
+    const zBack = -2.1;
+    const yBase = -1.65;
+    const yBeam = 1.05;
+    const yRoof = 2.35;
+
+    xs.forEach((x, index) => {
+      frame.add(beamBetween(new THREE.Vector3(x, yBase, zFront), new THREE.Vector3(x, yRoof, zFront), index % 2 ? 0.055 : 0.072, index === 2 ? champagne : steel));
+      frame.add(beamBetween(new THREE.Vector3(x, yBase, zBack), new THREE.Vector3(x, yRoof, zBack), 0.045, ivory));
+      frame.add(beamBetween(new THREE.Vector3(x, yRoof, zBack), new THREE.Vector3(x, yRoof, zFront), 0.052, index % 2 ? steel : ivory));
     });
 
-    for (let i = 0; i < bayX.length - 1; i += 1) {
-      const xA = bayX[i];
-      const xB = bayX[i + 1];
-      primary.add(beamBetween(new THREE.Vector3(xA, roof, zFront), new THREE.Vector3(xB, roof, zFront), 0.055, i === 0 ? champagne : steel));
-      primary.add(beamBetween(new THREE.Vector3(xA, floor, zFront), new THREE.Vector3(xB, floor, zFront), 0.035, ivory));
-      primary.add(beamBetween(new THREE.Vector3(xA, roof, zBack), new THREE.Vector3(xB, roof, zBack), 0.032, sage));
-      primary.add(beamBetween(new THREE.Vector3(xA, floor, zBack), new THREE.Vector3(xB, floor, zBack), 0.028, steel));
-      primary.add(beamBetween(new THREE.Vector3(xA, floor, zFront), new THREE.Vector3(xB, roof, zFront), 0.018, i === 0 ? sage : champagne));
-      primary.add(beamBetween(new THREE.Vector3(xA, roof, zFront), new THREE.Vector3(xB, floor, zFront), 0.015, steel));
+    for (let i = 0; i < xs.length - 1; i += 1) {
+      const a = xs[i];
+      const b = xs[i + 1];
+      frame.add(beamBetween(new THREE.Vector3(a, yRoof, zFront), new THREE.Vector3(b, yRoof, zFront), 0.07, i === 1 ? champagne : steel));
+      frame.add(beamBetween(new THREE.Vector3(a, yBeam, zFront), new THREE.Vector3(b, yBeam, zFront), 0.044, ivory));
+      frame.add(beamBetween(new THREE.Vector3(a, yBase, zFront), new THREE.Vector3(b, yBase, zFront), 0.035, steel));
+      frame.add(beamBetween(new THREE.Vector3(a, yRoof, zBack), new THREE.Vector3(b, yRoof, zBack), 0.038, ivory));
+      if (i !== 2) {
+        frame.add(beamBetween(new THREE.Vector3(a, yBase, zFront), new THREE.Vector3(b, yRoof, zFront), 0.018, i % 2 ? sage : champagne));
+        frame.add(beamBetween(new THREE.Vector3(a, yRoof, zFront), new THREE.Vector3(b, yBase, zFront), 0.014, ivory));
+      }
     }
 
-    // Roof truss / pitched section.
-    const trussBaseY = 2.15;
-    const trussTopY = 3.15;
-    const roofNodes = [
-      new THREE.Vector3(-3.5, trussBaseY, -1.15),
-      new THREE.Vector3(-1.75, trussTopY, -1.15),
-      new THREE.Vector3(0, trussBaseY + 0.28, -1.15),
-      new THREE.Vector3(1.75, trussTopY - 0.12, -1.15),
-      new THREE.Vector3(3.55, trussBaseY, -1.15),
-    ];
-    for (let i = 0; i < roofNodes.length - 1; i += 1) {
-      secondary.add(beamBetween(roofNodes[i], roofNodes[i + 1], 0.025, i % 2 ? champagne : steel));
-      const baseA = new THREE.Vector3(roofNodes[i].x, trussBaseY, -1.15);
-      const baseB = new THREE.Vector3(roofNodes[i + 1].x, trussBaseY, -1.15);
-      secondary.add(beamBetween(baseA, baseB, 0.015, ivory));
-      secondary.add(beamBetween(baseA, roofNodes[i + 1], 0.012, sage));
+    // Pythagorean roof truss: repeated 3/4/5 reading without decorative circles.
+    const trussBaseY = 2.45;
+    for (let i = 0; i < 4; i += 1) {
+      const x0 = -4.2 + i * 2.1;
+      const x1 = x0 + 2.1;
+      const peakX = x0 + 1.26;
+      const peakY = trussBaseY + 1.15;
+      trusses.add(beamBetween(new THREE.Vector3(x0, trussBaseY, -0.2), new THREE.Vector3(x1, trussBaseY, -0.2), 0.022, steel));
+      trusses.add(beamBetween(new THREE.Vector3(x0, trussBaseY, -0.2), new THREE.Vector3(peakX, peakY, -0.2), 0.024, champagne));
+      trusses.add(beamBetween(new THREE.Vector3(peakX, peakY, -0.2), new THREE.Vector3(x1, trussBaseY, -0.2), 0.024, ivory));
+      trusses.add(beamBetween(new THREE.Vector3(peakX, peakY, -0.2), new THREE.Vector3(peakX, trussBaseY, -0.2), 0.014, sage));
     }
 
-    // Cantilevered floor plates and wall fragments.
-    const slabData: Array<[number, number, number, number, number, number, number]> = [
-      [3.5, 0.075, 1.45, -1.05, 0.72, -0.25, 0.06],
-      [2.75, 0.065, 1.18, 0.82, -0.15, -0.52, -0.09],
-      [1.85, 0.055, 0.85, 1.7, -0.92, 0.08, 0.17],
-    ];
-    const slabs: THREE.Mesh[] = [];
-    slabData.forEach(([w, h, d, x, y, z, ry], index) => {
-      const mesh = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), index === 1 ? glass : index === 2 ? champagne : ivory);
-      mesh.position.set(x, y, z);
-      mesh.rotation.y = ry;
-      primary.add(mesh);
-      slabs.push(mesh);
-      mesh.add(new THREE.LineSegments(new THREE.EdgesGeometry(mesh.geometry), new THREE.LineBasicMaterial({ color: index === 1 ? 0x7eabba : 0xd6c28f, transparent: true, opacity: 0.22 })));
+    // Floor / section planes represent measured surface, not sculptural mass.
+    const floorA = new THREE.Mesh(new THREE.PlaneGeometry(8.55, 3.25), glass);
+    floorA.rotation.x = -Math.PI / 2;
+    floorA.position.set(0.05, yBase + 0.025, -0.45);
+    surfaces.add(floorA);
+    const floorEdges = new THREE.LineSegments(new THREE.EdgesGeometry(floorA.geometry), warmLine.clone());
+    floorA.add(floorEdges);
+
+    const mezz = new THREE.Mesh(new THREE.PlaneGeometry(4.25, 2.5), new THREE.MeshBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.035, side: THREE.DoubleSide }));
+    mezz.rotation.x = -Math.PI / 2;
+    mezz.position.set(1.05, yBeam + 0.035, -0.45);
+    surfaces.add(mezz);
+    mezz.add(new THREE.LineSegments(new THREE.EdgesGeometry(mezz.geometry), faintLine.clone()));
+
+    const sectionPlane = new THREE.Mesh(new THREE.PlaneGeometry(8.7, 4.7, 14, 8), new THREE.MeshBasicMaterial({ color: 0x7eabba, wireframe: true, transparent: true, opacity: 0.026, side: THREE.DoubleSide }));
+    sectionPlane.position.set(0.1, 0.15, -2.55);
+    drawing.add(sectionPlane);
+
+    // Drawing axes, levels and dimension ticks floating in the same 3D field.
+    [-4.25, -2.1, 0.05, 2.2, 4.35].forEach((x, i) => {
+      drawing.add(lineBetween(new THREE.Vector3(x, -2.15, 1.38), new THREE.Vector3(x, 3.95, 1.38), i === 2 ? warmLine.clone() : faintLine.clone()));
+      const tick = lineBetween(new THREE.Vector3(x - 0.08, -1.95, 1.42), new THREE.Vector3(x + 0.08, -1.95, 1.42), warmLine.clone());
+      drawing.add(tick);
+    });
+    [-1.65, 1.05, 2.35, 3.6].forEach((y, i) => {
+      drawing.add(lineBetween(new THREE.Vector3(-4.75, y, 1.45), new THREE.Vector3(4.75, y, 1.45), i === 1 ? coolLine.clone() : faintLine.clone()));
     });
 
-    const sectionWall = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 2.7, 7, 5), glass);
-    sectionWall.position.set(-1.65, 0.35, -1.85);
-    sectionWall.rotation.y = 0.12;
-    primary.add(sectionWall);
+    const dimTop = lineBetween(new THREE.Vector3(-4.25, 3.82, 1.52), new THREE.Vector3(4.35, 3.82, 1.52), warmLine.clone());
+    drawing.add(dimTop);
+    [-4.25, 4.35].forEach((x) => drawing.add(lineBetween(new THREE.Vector3(x, 3.68, 1.52), new THREE.Vector3(x, 3.96, 1.52), warmLine.clone())));
 
-    // Stair / circulation line as an architectural section, not a decorative orbit.
-    const stairPts: THREE.Vector3[] = [];
-    for (let i = 0; i < 9; i += 1) {
-      stairPts.push(new THREE.Vector3(-2.35 + i * 0.42, -1.15 + i * 0.24, 0.45));
-      stairPts.push(new THREE.Vector3(-1.95 + i * 0.42, -1.15 + i * 0.24, 0.45));
-    }
-    for (let i = 0; i < stairPts.length - 1; i += 2) {
-      secondary.add(beamBetween(stairPts[i], stairPts[i + 1], 0.018, champagne));
-      if (i + 2 < stairPts.length) secondary.add(beamBetween(stairPts[i + 1], stairPts[i + 2], 0.014, steel));
-    }
+    const planRect = rectangleLines(5.4, 2.45, faintLine.clone());
+    planRect.rotation.x = -Math.PI / 2;
+    planRect.rotation.z = 0.12;
+    planRect.position.set(-0.7, -1.38, 0.05);
+    drawing.add(planRect);
 
-    // Drawings floating in depth: section, elevation and Pythagorean construction.
-    const elevation = new THREE.Group();
-    const elevationY = [-1.2, -0.2, 0.8, 1.8];
-    elevationY.forEach((y, i) => elevation.add(line([new THREE.Vector3(-2.8, y, 0), new THREE.Vector3(2.8, y, 0)], i === 2 ? 0xd6c28f : 0xe7dfcf, i === 2 ? 0.16 : 0.07)));
-    [-2.4, -0.8, 0.6, 2.25].forEach((x) => elevation.add(line([new THREE.Vector3(x, -1.35, 0), new THREE.Vector3(x, 2.0, 0)], 0xe7dfcf, 0.065)));
-    elevation.position.set(0.9, 0.05, -3.45);
-    elevation.rotation.y = -0.12;
-    drawings.add(elevation);
+    [1.1, 1.65, 2.2].forEach((size, i) => {
+      const tri = rightTriangle(size, (i === 1 ? warmLine : i === 2 ? coolLine : faintLine).clone());
+      tri.position.set(-3 + i * 2.65, 0.2 + i * 0.62, -1.3 - i * 0.35);
+      tri.rotation.set(0.08 + i * 0.08, -0.22 + i * 0.16, -0.08 + i * 0.11);
+      drawing.add(tri);
+    });
 
-    const triangleA = pythagoreanDiagram(2.0, 0xd6c28f, 0.15);
-    triangleA.position.set(-3.4, 1.0, -2.75);
-    triangleA.rotation.set(0.08, 0.14, -0.09);
-    drawings.add(triangleA);
-
-    const triangleB = pythagoreanDiagram(1.1, 0x7eabba, 0.12);
-    triangleB.position.set(3.45, -0.55, -2.9);
-    triangleB.rotation.set(-0.08, -0.22, 0.18);
-    drawings.add(triangleB);
-
-    // Architectural dimension lines / ticks in 3D.
-    dimensions.add(dimensionLine(new THREE.Vector3(-3.5, -2.12, 1.2), new THREE.Vector3(3.55, -2.12, 1.2), new THREE.Vector3(0, 1, 0), 0xd6c28f));
-    dimensions.add(dimensionLine(new THREE.Vector3(3.95, -1.65, 0.95), new THREE.Vector3(3.95, 2.15, 0.95), new THREE.Vector3(1, 0, 0), 0x7eabba));
-    dimensions.add(dimensionLine(new THREE.Vector3(-3.75, 2.55, -2.45), new THREE.Vector3(3.75, 2.55, -2.45), new THREE.Vector3(0, 1, 0), 0xe7dfcf));
-
-    // Datum / grid crossing the structure.
-    const datumMat = new THREE.LineBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.08 });
-    const datum = new THREE.LineSegments(
-      new THREE.BufferGeometry().setFromPoints([
-        new THREE.Vector3(-6, 0, -0.8), new THREE.Vector3(6, 0, -0.8),
-        new THREE.Vector3(0, -4, -0.8), new THREE.Vector3(0, 4, -0.8),
-      ]), datumMat,
-    );
-    drawings.add(datum);
-
-    // Sparse drafting points: no spherical centerpiece, just depth and drawing dust.
-    const pointCount = compact ? 72 : 150;
+    // Sparse drafting particles: points live around structure, never forming an orb.
+    const pointCount = compact ? 70 : 150;
     const positions = new Float32Array(pointCount * 3);
     for (let i = 0; i < pointCount; i += 1) {
-      const u = (i * 0.61803398875) % 1;
-      const v = (i * 0.41421356237) % 1;
-      positions[i * 3] = (u - 0.5) * 10.5;
-      positions[i * 3 + 1] = (v - 0.5) * 6.8;
-      positions[i * 3 + 2] = -3.8 + ((i * 19) % 100) / 100 * 5.2;
+      const bay = i % 5;
+      positions[i * 3] = xs[bay] + (Math.random() - 0.5) * 1.8;
+      positions[i * 3 + 1] = -1.8 + Math.random() * 5.9;
+      positions[i * 3 + 2] = -2.7 + Math.random() * 4.7;
     }
-    const pointGeometry = new THREE.BufferGeometry();
-    pointGeometry.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const points = new THREE.Points(pointGeometry, new THREE.PointsMaterial({ color: 0xe7dfcf, transparent: true, opacity: 0.24, size: compact ? 0.015 : 0.019, sizeAttenuation: true }));
-    atmosphere.add(points);
+    const pg = new THREE.BufferGeometry();
+    pg.setAttribute("position", new THREE.BufferAttribute(positions, 3));
+    const particles = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xe8e0d1, size: compact ? 0.016 : 0.019, transparent: true, opacity: 0.26, sizeAttenuation: true }));
+    atmosphere.add(particles);
 
-    // Construction floor grid, cropped by fog and camera rather than acting as a wallpaper.
-    const grid = new THREE.GridHelper(compact ? 9 : 14, compact ? 18 : 28, 0x8b7c58, 0x30363a);
-    (Array.isArray(grid.material) ? grid.material : [grid.material]).forEach((material) => {
-      material.transparent = true;
-      material.opacity = compact ? 0.045 : 0.065;
-    });
-    grid.position.y = -1.67;
-    grid.rotation.y = -0.08;
-    atmosphere.add(grid);
-
-    scene.add(new THREE.HemisphereLight(0xe9e2d6, 0x07090c, compact ? 0.65 : 0.58));
-    const warm = new THREE.PointLight(0xd6c28f, compact ? 6 : 8.5, 18, 2);
-    warm.position.set(4.1, 3.5, 4.6);
+    scene.add(new THREE.HemisphereLight(0xe8e0d1, 0x07090c, compact ? 0.72 : 0.62));
+    const warm = new THREE.PointLight(0xd6c28f, compact ? 5 : 7.5, 18, 2);
+    warm.position.set(3.8, 3.4, 4.6);
     scene.add(warm);
-    const cool = new THREE.PointLight(0x7eabba, compact ? 3.8 : 5.5, 16, 2);
-    cool.position.set(-4.3, 0.2, 3.2);
+    const cool = new THREE.PointLight(0x7eabba, compact ? 3 : 4.4, 16, 2);
+    cool.position.set(-4.2, 0.4, 3.2);
     scene.add(cool);
 
     const pointer = { x: 0, y: 0 };
-    const targetPointer = { x: 0, y: 0 };
     const onPointer = (event: PointerEvent) => {
-      targetPointer.x = (event.clientX / Math.max(1, window.innerWidth) - 0.5) * 2;
-      targetPointer.y = (event.clientY / Math.max(1, window.innerHeight) - 0.5) * 2;
+      pointer.x = event.clientX / Math.max(1, window.innerWidth) - 0.5;
+      pointer.y = event.clientY / Math.max(1, window.innerHeight) - 0.5;
     };
     window.addEventListener("pointermove", onPointer, { passive: true });
 
     const resize = () => {
-      const width = host.clientWidth || window.innerWidth;
-      const height = host.clientHeight || window.innerHeight;
+      const width = Math.max(1, host.clientWidth);
+      const height = Math.max(1, host.clientHeight);
       renderer.setSize(width, height, false);
-      camera.aspect = width / Math.max(1, height);
+      camera.aspect = width / height;
       camera.updateProjectionMatrix();
     };
+    const ro = new ResizeObserver(resize);
+    ro.observe(host);
     resize();
-    const observer = new ResizeObserver(resize);
-    observer.observe(host);
 
-    const clock = new THREE.Clock();
     let raf = 0;
-    let easedStep = stepRef.current;
-    let cameraTarget = new THREE.Vector3();
+    const clock = new THREE.Clock();
+    const targetPosition = new THREE.Vector3();
+    const targetLook = new THREE.Vector3();
 
     const animate = () => {
       const t = clock.getElapsedTime();
-      pointer.x += (targetPointer.x - pointer.x) * 0.035;
-      pointer.y += (targetPointer.y - pointer.y) * 0.035;
-      easedStep += (stepRef.current - easedStep) * 0.045;
+      const index = Math.max(0, Math.min(6, stepRef.current));
+      const state = cameraStates[index];
+      const mobileOffset = compact ? new THREE.Vector3(0, 0.45, 1.5) : new THREE.Vector3();
+      targetPosition.copy(vector(state.p)).add(mobileOffset);
+      targetLook.copy(vector(state.t));
 
-      const stateIndex = Math.max(0, Math.min(cameraStates.length - 1, Math.round(easedStep)));
-      const state = cameraStates[stateIndex];
-      const desiredPosition = compact
-        ? new THREE.Vector3(0.2 + pointer.x * 0.12, 1.35 - pointer.y * 0.1, 11.1)
-        : vec(state.position).add(new THREE.Vector3(pointer.x * 0.18, -pointer.y * 0.13, 0));
-      const desiredTarget = compact ? new THREE.Vector3(0, 0.12, -0.5) : vec(state.target);
-
-      camera.position.lerp(desiredPosition, 0.026);
-      cameraTarget.lerp(desiredTarget, 0.04);
-      camera.fov += ((compact ? 47 : state.fov) - camera.fov) * 0.03;
+      camera.position.lerp(targetPosition, reduced ? 0.2 : 0.035);
+      camera.fov += ((compact ? Math.max(42, state.fov + 5) : state.fov) - camera.fov) * 0.035;
       camera.updateProjectionMatrix();
-      camera.lookAt(cameraTarget);
 
-      const phase = easedStep / 6;
-      world.position.x = compact ? 0 : mode === "hero" ? 0.85 : 0.45;
-      world.position.y = compact ? -0.15 : -0.08;
-      world.rotation.y = (mode === "hero" ? -0.08 : -0.03) + pointer.x * 0.018 + Math.sin(t * 0.09) * 0.01;
-      world.rotation.x = pointer.y * 0.01;
+      const parallaxX = compact ? 0 : pointer.x * 0.22;
+      const parallaxY = compact ? 0 : -pointer.y * 0.12;
+      world.rotation.y += ((index - 3) * 0.017 + parallaxX * 0.08 - world.rotation.y) * 0.025;
+      world.rotation.x += ((mode === "hero" ? -0.02 : 0.01) + parallaxY * 0.045 - world.rotation.x) * 0.025;
+      world.position.x += ((index === 1 ? 0.45 : index === 2 ? -0.35 : 0) - world.position.x) * 0.02;
+      world.position.y += ((index === 3 ? -0.2 : 0) - world.position.y) * 0.02;
 
-      primary.position.y = Math.sin(t * 0.22) * 0.025;
-      primary.rotation.y = Math.sin(t * 0.12) * 0.008 + phase * 0.04;
-      secondary.position.x = Math.sin(t * 0.17) * 0.035;
-      secondary.rotation.z = Math.sin(t * 0.14) * 0.007;
-      drawings.position.z = Math.sin(t * 0.16) * 0.055 - phase * 0.2;
-      drawings.rotation.y = Math.sin(t * 0.11) * 0.012;
-      dimensions.position.y = Math.sin(t * 0.19) * 0.025;
-      points.rotation.y = -t * 0.004;
+      if (!reduced) {
+        trusses.position.y = Math.sin(t * 0.42) * 0.025;
+        drawing.position.z = Math.sin(t * 0.27) * 0.035;
+        particles.position.x = Math.sin(t * 0.09) * 0.055;
+        surfaces.rotation.z = Math.sin(t * 0.12) * 0.002;
+      }
 
-      slabs.forEach((mesh, index) => {
-        const baseY = slabData[index][4];
-        mesh.position.y = baseY + Math.sin(t * 0.28 + index * 1.6) * 0.025 + (mode === "journey" ? Math.sin(phase * Math.PI) * (index - 1) * 0.12 : 0);
-      });
+      // Each workflow phase changes the architectural reading rather than swapping decorative effects.
+      const drawEnergy = index === 1 ? 1 : index === 5 ? 0.7 : 0.42;
+      drawing.scale.lerp(new THREE.Vector3(0.96 + drawEnergy * 0.05, 0.96 + drawEnergy * 0.05, 1), 0.03);
+      frame.scale.lerp(new THREE.Vector3(index === 2 ? 1.035 : 1, index === 2 ? 1.02 : 1, 1), 0.025);
+      trusses.rotation.z += (((index === 4 ? -0.028 : 0) - trusses.rotation.z) * 0.025);
+      surfaces.position.z += (((index === 2 || index === 3 ? 0.18 : 0) - surfaces.position.z) * 0.025);
 
+      const look = targetLook.clone().add(new THREE.Vector3(parallaxX * 0.18, parallaxY * 0.12, 0));
+      camera.lookAt(look);
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -310,15 +272,13 @@ export default function HomeWorldCanvas({ className, mode = "hero", step = 0 }: 
 
     return () => {
       cancelAnimationFrame(raf);
-      observer.disconnect();
+      ro.disconnect();
       window.removeEventListener("pointermove", onPointer);
       scene.traverse((object) => {
-        const mesh = object as THREE.Mesh;
-        if (mesh.geometry) mesh.geometry.dispose();
-        if (mesh.material) {
-          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-          materials.forEach((material) => material.dispose());
-        }
+        const item = object as THREE.Mesh;
+        item.geometry?.dispose?.();
+        const material = item.material as THREE.Material | THREE.Material[] | undefined;
+        if (material) (Array.isArray(material) ? material : [material]).forEach((entry) => entry.dispose());
       });
       renderer.dispose();
       renderer.domElement.remove();
