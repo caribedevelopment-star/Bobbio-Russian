@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import HomeLivingField from "./HomeLivingField";
+import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./HomeJourney.module.css";
 
 type Family = "design" | "visual" | "creative" | "code" | "data";
@@ -54,8 +55,7 @@ function BrandOrb({ tool }: { tool: Tool }) {
     <div className={styles.orbFace}>
       <i className={styles.orbSpecular} />
       {!failed && tool.src ? <img src={tool.src} alt="" aria-hidden="true" onError={() => setFailed(true)} /> : <b>{tool.short}</b>}
-      <span>{tool.name}</span>
-      <small>{tool.note}</small>
+      <span>{tool.name}</span><small>{tool.note}</small>
     </div>
   );
 }
@@ -69,7 +69,6 @@ export default function HomeJourney() {
   useEffect(() => {
     let raf = 0;
     let currentStep = -1;
-
     const update = () => {
       const el = root.current;
       if (!el) return;
@@ -78,70 +77,48 @@ export default function HomeJourney() {
       const p = Math.max(0, Math.min(1, -rect.top / travel));
       const scaled = p * 7;
       const nextStep = Math.min(6, Math.floor(scaled));
-      const local = Math.max(0, Math.min(1, scaled - nextStep));
-
       el.style.setProperty("--journey", `${p}`);
-      el.style.setProperty("--local", `${local}`);
       if (progressLine.current) progressLine.current.style.transform = `scaleX(${p})`;
       if (progressReadout.current) progressReadout.current.textContent = `${String(Math.round(p * 100)).padStart(3, "0")}%`;
-      if (nextStep !== currentStep) {
-        currentStep = nextStep;
-        setStep(nextStep);
-      }
+      if (nextStep !== currentStep) { currentStep = nextStep; setStep(nextStep); }
     };
-
-    const requestUpdate = () => {
-      cancelAnimationFrame(raf);
-      raf = requestAnimationFrame(update);
-    };
-
+    const requestUpdate = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); };
     update();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
-    return () => {
-      cancelAnimationFrame(raf);
-      window.removeEventListener("scroll", requestUpdate);
-      window.removeEventListener("resize", requestUpdate);
-    };
+    return () => { cancelAnimationFrame(raf); window.removeEventListener("scroll", requestUpdate); window.removeEventListener("resize", requestUpdate); };
   }, []);
-
-  const onPointerMove = (event: React.PointerEvent<HTMLElement>) => {
-    const el = root.current;
-    if (!el) return;
-    const rect = el.getBoundingClientRect();
-    el.style.setProperty("--jx", `${(event.clientX - rect.left) / Math.max(1, rect.width)}`);
-    el.style.setProperty("--jy", `${(event.clientY - rect.top) / Math.max(1, rect.height)}`);
-  };
 
   const goToStep = (index: number) => {
     const el = root.current;
     if (!el) return;
     const top = window.scrollY + el.getBoundingClientRect().top;
     const travel = Math.max(1, el.offsetHeight - window.innerHeight);
-    const targetProgress = index === 6 ? 0.94 : Math.min(0.84, (index + 0.22) / 7);
-    window.scrollTo({ top: top + travel * targetProgress, behavior: "smooth" });
+    const target = index === 6 ? 0.955 : (index + 0.18) / 7;
+    window.scrollTo({ top: top + travel * target, behavior: "smooth" });
   };
 
   const activeFamily: Family | null = step === 1 ? "design" : step === 2 ? "visual" : step === 3 ? "creative" : step === 4 ? "code" : step === 5 ? "data" : null;
+  const activeTools = activeFamily ? tools.filter((tool) => tool.family === activeFamily) : [];
 
   return (
-    <section id="home-journey" ref={root} onPointerMove={onPointerMove} className={`${styles.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
+    <section id="home-journey" ref={root} className={`${styles.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
       <div className={styles.sticky}>
         <HomeLivingField className={styles.livingField} />
-        <div className={styles.atmosphere} aria-hidden="true" />
+        <HomeWorldCanvas className={styles.world} mode="journey" step={step} />
+        <div className={styles.vignette} aria-hidden="true" />
+        <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /></div>
         <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
-        <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /><span /><span /></div>
-        <div className={styles.contour} aria-hidden="true"><i /><i /><i /></div>
 
         <div className={styles.topline}>
           <span>BR / DIGITAL ATELIER</span>
-          <span>SCROLL-SYNCHRONISED SPATIAL WORKFLOW</span>
+          <span>LIVE WORKFLOW / WEBGL</span>
           <span ref={progressReadout}>000%</span>
         </div>
 
         <nav className={styles.rail} aria-label="Journey chapters">
           {steps.map((label, index) => (
-            <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined} aria-label={`Go to ${label}`}>
+            <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined}>
               <i /><span>{String(index).padStart(2, "0")}</span><b>{label}</b>
             </button>
           ))}
@@ -149,61 +126,46 @@ export default function HomeJourney() {
 
         <div className={styles.copy} aria-live="polite">
           <div className={styles.copyRule}><i /><span>SECTION / {String(step).padStart(2, "0")}</span></div>
-          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>One practice.<br /><em>Many instruments.</em></h2><span>Scroll through the system. The same architectural core changes character as different tools enter the workflow.</span></>}
+          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>One practice.<br /><em>Many instruments.</em></h2><span>The model stays alive while the workflow changes around it. Scroll to move from architecture to image, code and data.</span></>}
           {activeFamily && <><p>{familyMeta[activeFamily].index} / {familyMeta[activeFamily].eyebrow}</p><h2>{familyMeta[activeFamily].title}<br /><em>{familyMeta[activeFamily].emphasis}</em></h2><span>{familyMeta[activeFamily].body}</span></>}
-          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The guided tour ends here. Four rooms open into the work, process and origins behind the practice.</span></>}
+          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The guided sequence resolves into four rooms. Pick the part of the practice you want to explore.</span></>}
         </div>
 
-        <div className={styles.system} aria-hidden={step === 6}>
-          <div className={styles.energyPlane} />
-          <div className={styles.architecture}>
-            <i className={styles.slabA} /><i className={styles.slabB} /><i className={styles.slabC} />
-            <i className={styles.columnA} /><i className={styles.columnB} /><i className={styles.columnC} />
-            <span className={styles.axisA} /><span className={styles.axisB} /><span className={styles.axisC} />
-            <span className={styles.bridgeA} /><span className={styles.bridgeB} />
-            <b className={styles.core}><em>BR</em><i /></b>
+        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""}`} aria-hidden={!activeFamily}>
+          <div className={styles.toolHeader}>
+            <span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span>
+            <b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b>
           </div>
-
-          {(["design", "visual", "creative", "code", "data"] as Family[]).map((family) => {
-            const familyTools = tools.filter((tool) => tool.family === family);
-            return (
-              <div key={family} className={`${styles.family} ${styles[family]} ${activeFamily === family ? styles.active : ""}`}>
-                <div className={styles.orbitTrack} />
-                {familyTools.map((tool, index) => {
-                  const angle = -94 + (360 / familyTools.length) * index;
-                  const radius = 210 + (index % 2) * 34;
-                  return (
-                    <article key={tool.name} className={styles.tool} style={{ "--angle": `${angle}deg`, "--radius": `${radius}px`, "--delay": `${index * -0.73}s` } as React.CSSProperties}>
-                      <BrandOrb tool={tool} />
-                    </article>
-                  );
-                })}
-              </div>
-            );
-          })}
-
-          <div className={styles.ringA} /><div className={styles.ringB} /><div className={styles.ringC} />
-          <div className={styles.measureA}><i /><span>8.40 m</span><i /></div>
-          <div className={styles.measureB}><span>±0.00</span></div>
-          <div className={styles.datum}>A—A / LIVING WORKFLOW</div>
-          <div className={styles.particles}><i /><i /><i /><i /><i /><i /></div>
+          <div className={styles.tools}>
+            {activeTools.map((tool, index) => {
+              const angle = -100 + (360 / Math.max(1, activeTools.length)) * index;
+              return (
+                <article key={tool.name} className={styles.tool} style={{ "--angle": `${angle}deg`, "--delay": `${index * -0.72}s` } as React.CSSProperties}>
+                  <BrandOrb tool={tool} />
+                </article>
+              );
+            })}
+          </div>
         </div>
+
+        <div className={styles.worldMeta} aria-hidden="true">
+          <span>A—A / LIVING WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small>
+        </div>
+        <div className={styles.measure} aria-hidden="true"><i /><span>8.40 m</span><i /></div>
 
         <div id="portfolio-menu" className={styles.chapterMenu} aria-hidden={step !== 6}>
           <div className={styles.menuIntro}><span>SELECT A ROOM</span><b>04 CHAPTERS / ONE PRACTICE</b></div>
           {chapters.map(([no, name, href, note, meta]) => (
             <Link href={href} prefetch={false} key={href} tabIndex={step === 6 ? 0 : -1}>
-              <span>{no}</span>
-              <div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div>
-              <b>↗</b>
+              <span>{no}</span><div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div><b>↗</b>
               <i className={styles.menuOrganism}><em /><em /><em /></i>
             </Link>
           ))}
         </div>
 
-        <div className={styles.hint}><i /><span>{step < 6 ? "KEEP SCROLLING / THE SYSTEM WILL CHANGE" : "SELECT A CHAPTER / OR CONTINUE DOWN"}</span></div>
+        <div className={styles.hint}><i /><span>{step < 6 ? "SCROLL / THE WORLD RECONFIGURES" : "SELECT A CHAPTER"}</span></div>
         <div className={styles.progress}><i ref={progressLine} /></div>
-        <div className={styles.bottomline}><span>DRAW</span><span>MODEL</span><span>EDIT</span><span>BUILD</span><span>DATA</span><span>ENTER</span></div>
+        <div className={styles.bottomline}>{steps.slice(1).map((label) => <span key={label}>{label}</span>)}</div>
       </div>
       <span id="home-journey-end" className={styles.menuAnchor} aria-hidden="true" />
     </section>
