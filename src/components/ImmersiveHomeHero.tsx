@@ -1,9 +1,8 @@
 "use client";
 
 import { useRef } from "react";
-import ArchitecturalOverlay from "./ArchitecturalOverlay";
 import HomeLivingField from "./HomeLivingField";
-import SpatialCore from "./SpatialCore";
+import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./ImmersiveHomeHero.module.css";
 
 export default function ImmersiveHomeHero() {
@@ -22,8 +21,9 @@ export default function ImmersiveHomeHero() {
   return (
     <section id="home-top" ref={root} onPointerMove={onPointerMove} className={styles.hero} aria-label="Bobbio Russian architectural portfolio introduction">
       <HomeLivingField className={styles.field} />
+      <HomeWorldCanvas className={styles.world} mode="hero" />
       <div className={styles.vignette} aria-hidden="true" />
-      <div className={styles.blueprint} aria-hidden="true"><i /><i /><i /><i /><i /></div>
+      <div className={styles.plan} aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
       <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
 
       <div className={styles.topline}>
@@ -36,29 +36,29 @@ export default function ImmersiveHomeHero() {
         <p className={styles.kicker}>FROM BIT TO MATTER.</p>
         <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
         <div className={styles.introRow}>
-          <p>Architecture, luxury interiors and living systems developed through drawing, modelling, material, light, computation and immersive space.</p>
-          <div className={styles.disciplines}>
-            <span>01 / ARCHITECTURE</span>
-            <span>02 / BIO-DESIGN</span>
-            <span>03 / CREATIVE DIRECTION</span>
+          <p>Architecture, luxury interiors and living systems shaped through drawing, modelling, material, light, computation and immersive space.</p>
+          <div className={styles.actions}>
+            <a href="#home-journey"><span>ENTER EXPERIENCE</span><b>↓</b></a>
+            <a href="#portfolio-menu"><span>CHOOSE A SECTION</span><b>↗</b></a>
           </div>
         </div>
       </div>
 
-      <div className={styles.object} aria-hidden="true">
-        <div className={styles.objectGlow} />
-        <SpatialCore />
-        <ArchitecturalOverlay />
-        <div className={styles.measureX}><i /><span>12.80 m</span><i /></div>
-        <div className={styles.measureY}><i /><span>7.40 m</span><i /></div>
-        <div className={styles.sectionTag}>A—A / SECTION</div>
-        <div className={styles.areaTag}>AREA / 128.4 m²</div>
+      <div className={styles.worldMeta} aria-hidden="true">
+        <span>LIVE SPATIAL MODEL</span>
+        <b>A—A / 1:50</b>
+        <small>POINTER / PARALLAX / REALTIME</small>
       </div>
+      <div className={styles.measureX} aria-hidden="true"><i /><span>12.80 m</span><i /></div>
+      <div className={styles.measureY} aria-hidden="true"><i /><span>7.40 m</span><i /></div>
+      <div className={styles.areaTag} aria-hidden="true">AREA / 128.4 m²</div>
+      <div className={styles.datum} aria-hidden="true">±0.00 / DATUM</div>
 
-      <a className={styles.scrollCue} href="#home-journey">
-        <span>SCROLL TO EXPLORE</span>
-        <i><b /></i>
-      </a>
+      <div className={styles.disciplines}>
+        <span><i />01 / ARCHITECTURE</span>
+        <span><i />02 / BIO-DESIGN</span>
+        <span><i />03 / CREATIVE DIRECTION</span>
+      </div>
 
       <div className={styles.bottomline}>
         <span>VENEZUELAN · ITALIAN · MADRID-BASED</span>
