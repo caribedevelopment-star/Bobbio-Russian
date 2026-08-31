@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import LazyEmbed from "../../components/LazyEmbed";
 import Lexicon from "../../components/Lexicon";
+import UrbanSystemFlow from "../../components/UrbanSystemFlow";
 import styles from "./work.module.css";
 
 export const metadata: Metadata = { title: "Cultivated Matter", description: "Urban Ponics immersive case study by Bobbio Russian." };
@@ -24,7 +25,7 @@ export default function WorkPage() {
       <header className={styles.header}>
         <p className="eyebrow" data-reveal>02 / <Lexicon term="matter" /></p>
         <h1 data-reveal><Lexicon term="matter" /><br /><em>Urban Ponics.</em></h1>
-        <p data-reveal>A bio-design project read through four lenses: film creates atmosphere, narrative clarifies intent, project frames build the world, and the 3D catalogue exposes the designed systems themselves.</p>
+        <p data-reveal>A bio-design project read through atmosphere, living systems, project imagery and interactive objects. The page moves from feeling the project to understanding how it works.</p>
       </header>
 
       <section className={styles.filmSection}>
@@ -37,23 +38,12 @@ export default function WorkPage() {
           <div className={styles.filmCoordinates}><span>URBAN PONICS</span><span>MOVING IMAGE · 16:9</span></div>
           <LazyEmbed title="Urban Ponics film" src={FILM} kind="film" status="Film · atmosphere" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" />
         </div>
-        <div className={styles.caseIndex} data-reveal>
-          <span>PROJECT SEQUENCE</span>
-          <div><b>01</b><strong>FILM</strong><small>Atmosphere</small></div>
-          <i />
-          <div><b>02</b><strong>IDEA</strong><small>Intent + system</small></div>
-          <i />
-          <div><b>03</b><strong>FRAMES</strong><small>Visual language</small></div>
-          <i />
-          <div><b>04</b><strong>OBJECTS</strong><small>Interactive 3D</small></div>
-        </div>
+        <UrbanSystemFlow />
       </section>
 
       <section className={styles.narrative}>
-        <div className={styles.narrativeIndex} data-reveal><span>02</span><i /><b>THE IDEA / SYSTEM</b></div>
-        <div className={styles.narrativeStatement} data-reveal>
-          <p>“Cities should not only consume landscapes. They can become productive landscapes themselves.”</p>
-        </div>
+        <div className={styles.narrativeIndex} data-reveal><span>03</span><i /><b>THE IDEA / SYSTEM</b></div>
+        <div className={styles.narrativeStatement} data-reveal><p>“Cities should not only consume landscapes. They can become productive landscapes themselves.”</p></div>
         <div className={styles.narrativeGrid}>
           <article data-reveal><span>WHY</span><h3>Food closer to people.</h3><p>Urban Ponics explores compact growing systems as part of the city rather than infrastructure hidden far outside it.</p></article>
           <article data-reveal><span>HOW</span><h3>Modular by design.</h3><p>The greenhouse, tower and NFT system operate as a family: scalable pieces capable of adapting to climate, crop and available space.</p></article>
@@ -64,7 +54,7 @@ export default function WorkPage() {
 
       <section className={styles.visualSection}>
         <div className={styles.sectionLead} data-reveal>
-          <div><span>03</span><p>PROJECT FRAMES / VISUAL WORLD</p></div>
+          <div><span>04</span><p>PROJECT FRAMES / VISUAL WORLD</p></div>
           <h2>A system needs<br /><em>a visual language.</em></h2>
           <p>These frames are treated as editorial plates rather than thumbnails: city, agriculture, product and identity are composed as one ecosystem.</p>
         </div>
@@ -80,9 +70,9 @@ export default function WorkPage() {
 
       <section className={styles.catalogue}>
         <div className={styles.catalogueHeader} data-reveal>
-          <div><span>04</span><p>3D CATALOGUE / OBJECTS</p></div>
+          <div><span>05</span><p>3D CATALOGUE / OBJECTS</p></div>
           <h2>Touch the<br /><em>system itself.</em></h2>
-          <p>Each Sketchfab model is integrated as a catalogue object. Drag to rotate, zoom to inspect and read the object as designed infrastructure rather than an external embed.</p>
+          <p>The current models remain live and explorable while the portfolio prepares for direct WebGL integration. Drag to rotate and zoom to inspect each object.</p>
         </div>
         <div className={styles.catalogueGrid}>
           <article data-reveal>
