@@ -25,7 +25,10 @@ export default function MotionEngine() {
   const [targetMeta, setTargetMeta] = useState<[string, string]>(routeMeta[pathname] ?? ["BR", "SPATIAL INDEX"]);
 
   useEffect(() => {
-    if (initial.current) { initial.current = false; return; }
+    if (initial.current) {
+      initial.current = false;
+      return;
+    }
     if (!navigating.current) return;
     setTargetMeta(routeMeta[pathname] ?? ["BR", "SPATIAL INDEX"]);
     setPhase("opening");
@@ -33,7 +36,7 @@ export default function MotionEngine() {
       setPhase("idle");
       navigating.current = false;
       document.documentElement.removeAttribute("data-route-transition");
-    }, 1120);
+    }, 920);
     timers.current.push(timer);
   }, [pathname]);
 
@@ -73,14 +76,17 @@ export default function MotionEngine() {
       if (url.origin !== window.location.origin) return;
       if (url.pathname === pathname && url.hash) return;
       if (url.pathname === pathname && !url.search && !url.hash) return;
-      if (navigating.current) { event.preventDefault(); return; }
+      if (navigating.current) {
+        event.preventDefault();
+        return;
+      }
 
       event.preventDefault();
       navigating.current = true;
       setTargetMeta(routeMeta[url.pathname] ?? ["BR", "SPATIAL INDEX"]);
       setPhase("closing");
       document.documentElement.setAttribute("data-route-transition", "true");
-      const timer = window.setTimeout(() => router.push(`${url.pathname}${url.search}${url.hash}`), 880);
+      const timer = window.setTimeout(() => router.push(`${url.pathname}${url.search}${url.hash}`), 680);
       timers.current.push(timer);
     };
 
@@ -106,7 +112,7 @@ export default function MotionEngine() {
       <span className={transition.cross} />
       <span className={transition.sectionLine}><i /><i /><i /></span>
       <span className={transition.routeLabel}><b>{targetMeta[0]}</b><i />{targetMeta[1]}</span>
-      <span className={transition.status}>{phase === "closing" ? "ENTERING / STRUCTURAL SECTION" : "RECONSTRUCTING / NEXT SPACE"}</span>
+      <span className={transition.status}>{phase === "closing" ? "ENTERING / SPATIAL TRANSITION" : "RECONSTRUCTING / NEXT ROOM"}</span>
     </div>
   );
 }
