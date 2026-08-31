@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import RenderGallery, { type RenderItem } from "../../components/RenderGallery";
 import ClayCompare from "../../components/ClayCompare";
-import ToolOrbit from "../../components/ToolOrbit";
 import Lexicon from "../../components/Lexicon";
 import styles from "./renders.module.css";
 import process from "./process.module.css";
@@ -42,23 +41,12 @@ const items: RenderItem[] = [
 const reel = [items[1], items[9], items[17]];
 
 const workflow = [
-  { no: "01", title: "Draw", meta: "AUTOCAD · REVIT", text: "Plans, sections, dimensions and technical relationships establish the logic before the image exists." },
-  { no: "02", title: "Model", meta: "SKETCHUP · REVIT", text: "Volume, circulation, furniture and proportion are tested quickly in three dimensions." },
+  { no: "01", title: "Draw", meta: "PLAN · SECTION · DETAIL", text: "Plans, sections, dimensions and technical relationships establish the logic before the image exists." },
+  { no: "02", title: "Model", meta: "SPACE · PROPORTION", text: "Volume, circulation, furniture and proportion are tested quickly in three dimensions." },
   { no: "03", title: "Clay", meta: "FORM · CAMERA", text: "Materials are temporarily removed so scale, composition, shadows and visual hierarchy can be judged without distraction." },
-  { no: "04", title: "Light", meta: "D5 · TWINMOTION · UNREAL", text: "Daylight, artificial light, reflections and atmosphere are tuned as design decisions, not post-production decoration." },
-  { no: "05", title: "Final", meta: "D5 · V-RAY · UNREAL", text: "Material, detail and lighting converge into a final image that still needs to read as architecture first." },
+  { no: "04", title: "Light", meta: "DAYLIGHT · ATMOSPHERE", text: "Daylight, artificial light, reflections and atmosphere are tuned as design decisions, not post-production decoration." },
+  { no: "05", title: "Final", meta: "MATERIAL · FIDELITY", text: "Material, detail and lighting converge into a final image that still needs to read as architecture first." },
 ];
-
-const tools = [
-  ["01", "AutoCAD", "Precise plans, elevations, dimensions and technical development."],
-  ["02", "Revit", "BIM logic, coordinated architectural information and spatial consistency."],
-  ["03", "SketchUp", "Fast spatial modelling, iterations, furniture and proportion studies."],
-  ["04", "D5 Render", "Real-time material, lighting and high-speed visual decision making."],
-  ["05", "Twinmotion", "Immersive environments, 360º studies and rapid atmospheric testing."],
-  ["06", "Unreal Engine", "Cinematic real-time scenes, deeper interaction and spatial storytelling."],
-  ["07", "V-Ray", "Controlled material response, lighting and high-fidelity final imagery."],
-  ["08", "Blender", "Geometry, optimisation, asset preparation and experimental workflows."],
-] as const;
 
 export default function RendersPage() {
   return (
@@ -68,15 +56,6 @@ export default function RendersPage() {
         <h1 data-reveal><Lexicon term="visions" /><br /><em>Before matter.</em></h1>
         <div data-reveal><p>A visual archive, but also a record of how a space develops. The image is only the last layer of a process that begins with drawing, proportion and spatial decisions.</p><span>26 selected frames · process + final imagery</span></div>
       </header>
-
-      <section className={process.tools}>
-        <div className={process.toolsHeader} data-reveal>
-          <p className="eyebrow">DIGITAL ATELIER</p>
-          <h2>Tools in orbit.<br />Design at the centre.</h2>
-          <p>The software changes with the question. Drawing, BIM, modelling, real-time light and final imagery are different instruments inside one spatial workflow.</p>
-        </div>
-        <div data-reveal><ToolOrbit /></div>
-      </section>
 
       <section className={styles.reel} data-reveal>
         <div className={styles.reelTop}><span>VISUAL REEL / 03 FRAGMENTS</span><b>LUXURY INTERIORS · LIGHT STUDIES</b><i>SCROLL ↓</i></div>
@@ -104,9 +83,6 @@ export default function RendersPage() {
             </article>
           ))}
         </div>
-        <div className={process.software} data-reveal>
-          <span>AutoCAD</span><span>Revit</span><span>SketchUp</span><span>D5 Render</span><span>Twinmotion</span><span>Unreal Engine</span><span>V-Ray</span><span>Blender</span>
-        </div>
       </section>
 
       <section className={process.compareSection}>
@@ -120,17 +96,6 @@ export default function RendersPage() {
           <ClayCompare src={thumb(items[0].id, 2200)} alt={items[0].alt} label="Residence 1277 · kitchen composition" />
         </div>
         <p className={process.compareNote}>Interactive study mode / the final render image itself is not altered.</p>
-      </section>
-
-      <section className={process.tools}>
-        <div className={process.toolsHeader} data-reveal>
-          <p className="eyebrow">TOOLCHAIN / NOTES</p>
-          <h2>Different instruments.<br />One design decision.</h2>
-          <p>Each tool earns its place by what it helps reveal: geometry, coordination, material, light, movement or final fidelity.</p>
-        </div>
-        <div className={process.toolGrid} data-reveal>
-          {tools.map(([no, name, text]) => <article key={name} className={process.tool}><span>{no}</span><h3>{name}</h3><p>{text}</p></article>)}
-        </div>
       </section>
 
       <section className={styles.manifesto}>
