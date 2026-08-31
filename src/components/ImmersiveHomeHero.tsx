@@ -7,6 +7,8 @@ import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./ImmersiveHomeHero.module.css";
 import atmosphere from "./ImmersiveHomeAtmosphere.module.css";
 
+const brands = ["BONTEMPI CASA", "FEBAL CASA", "COLOMBINI GROUP", "GRUPO TJC"];
+
 export default function ImmersiveHomeHero() {
   const root = useRef<HTMLElement>(null);
 
@@ -38,6 +40,13 @@ export default function ImmersiveHomeHero() {
       <div className={styles.copy}>
         <p className={styles.kicker}>FROM DRAWING TO EXPERIENCE.</p>
         <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
+
+        <div className={styles.brandBand} aria-label="Selected professional context">
+          <div className={styles.brandTrack}>
+            {[...brands, ...brands, ...brands].map((brand, index) => <span key={`${brand}-${index}`}><i />{brand}</span>)}
+          </div>
+        </div>
+
         <div className={styles.introRow}>
           <p>Architecture, luxury interiors and living systems developed through structure, drawing, modelling, material, light, computation and immersive space.</p>
           <div className={styles.actions}>
