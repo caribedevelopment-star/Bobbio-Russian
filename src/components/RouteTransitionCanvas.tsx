@@ -13,6 +13,20 @@ function beamBetween(a: THREE.Vector3, b: THREE.Vector3, width: number, material
   return mesh;
 }
 
+function portal(width: number, height: number, depth: number, material: THREE.Material, brace: THREE.Material) {
+  const group = new THREE.Group();
+  const leftBottom = new THREE.Vector3(-width / 2, -height / 2, 0);
+  const leftTop = new THREE.Vector3(-width / 2, height / 2, 0);
+  const rightBottom = new THREE.Vector3(width / 2, -height / 2, 0);
+  const rightTop = new THREE.Vector3(width / 2, height / 2, 0);
+  group.add(beamBetween(leftBottom, leftTop, depth, material));
+  group.add(beamBetween(rightBottom, rightTop, depth, material));
+  group.add(beamBetween(leftTop, rightTop, depth, material));
+  group.add(beamBetween(leftBottom, rightBottom, depth * 0.72, material));
+  group.add(beamBetween(leftBottom, rightTop, depth * 0.42, brace));
+  return group;
+}
+
 export default function RouteTransitionCanvas({ className, active, phase }: Props) {
   const mount = useRef<HTMLDivElement>(null);
   const activeRef = useRef(active);
@@ -24,73 +38,97 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
     const host = mount.current;
     if (!host) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const scene = new THREE.Scene();
-    scene.fog = new THREE.FogExp2(0x07090c, 0.09);
-    const camera = new THREE.PerspectiveCamera(44, 1, 0.1, 30);
-    camera.position.set(0, 0.25, 7.4);
+    const compact = window.matchMedia("(max-width: 700px)").matches;
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: "high-performance" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    renderer.setClearColor(0x07090c, 0);
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x06080a, compact ? 0.095 : 0.07);
+    const camera = new THREE.PerspectiveCamera(compact ? 51 : 43, 1, 0.1, 40);
+    camera.position.set(0, 0.2, 8.2);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: !compact, alpha: true, powerPreference: "high-performance" });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, compact ? 1.2 : 1.45));
+    renderer.setClearColor(0x06080a, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
     host.appendChild(renderer.domElement);
 
     const world = new THREE.Group();
+    const corridor = new THREE.Group();
+    const drawings = new THREE.Group();
     scene.add(world);
-    const gold = new THREE.MeshStandardMaterial({ color: 0xd6c28f, metalness: 0.62, roughness: 0.28, transparent: true, opacity: 0.5, emissive: 0x3f3218, emissiveIntensity: 0.24 });
-    const steel = new THREE.MeshStandardMaterial({ color: 0x8b949b, metalness: 0.7, roughness: 0.32, transparent: true, opacity: 0.28 });
-    const blue = new THREE.MeshStandardMaterial({ color: 0x7eabba, metalness: 0.38, roughness: 0.28, transparent: true, opacity: 0.26 });
+    world.add(corridor, drawings);
 
-    const core = new THREE.Mesh(new THREE.IcosahedronGeometry(0.48, 3), gold);
-    world.add(core);
-    const coreWire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.IcosahedronGeometry(0.78, 2)), new THREE.LineBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.32 }));
-    world.add(coreWire);
+    const gold = new THREE.MeshStandardMaterial({ color: 0xd6c28f, metalness: 0.58, roughness: 0.3, transparent: true, opacity: 0.5, emissive: 0x302713, emissiveIntensity: 0.15 });
+    const steel = new THREE.MeshStandardMaterial({ color: 0x758087, metalness: 0.72, roughness: 0.32, transparent: true, opacity: 0.31 });
+    const ivory = new THREE.MeshStandardMaterial({ color: 0xe7dfcf, metalness: 0.2, roughness: 0.42, transparent: true, opacity: 0.22 });
+    const blue = new THREE.MeshStandardMaterial({ color: 0x7eabba, metalness: 0.38, roughness: 0.34, transparent: true, opacity: 0.24 });
 
-    const frame = new THREE.Group();
-    world.add(frame);
-    const pts = [
-      new THREE.Vector3(-2.8, -1.65, -0.8), new THREE.Vector3(2.8, -1.65, -0.8),
-      new THREE.Vector3(-2.8, 1.65, -0.8), new THREE.Vector3(2.8, 1.65, -0.8),
-      new THREE.Vector3(-2.1, -1.15, 1.1), new THREE.Vector3(2.1, -1.15, 1.1),
-      new THREE.Vector3(-2.1, 1.15, 1.1), new THREE.Vector3(2.1, 1.15, 1.1),
-    ];
-    [[0,1],[2,3],[0,2],[1,3],[4,5],[6,7],[4,6],[5,7],[0,6],[2,4],[1,7],[3,5],[0,3],[1,2]].forEach(([a,b], i) => frame.add(beamBetween(pts[a], pts[b], i < 8 ? 0.027 : 0.016, i % 4 === 0 ? gold : i % 3 === 0 ? blue : steel)));
+    const zPositions = [-5.4, -3.6, -1.8, 0, 1.8, 3.55];
+    const portals: THREE.Group[] = [];
+    zPositions.forEach((z, index) => {
+      const scale = 1.02 - index * 0.035;
+      const p = portal((compact ? 4.5 : 6.4) * scale, (compact ? 6.8 : 4.2) * scale, index === 3 ? 0.052 : 0.034, index === 3 ? gold : index % 2 ? steel : ivory, index % 2 ? blue : gold);
+      p.position.z = z;
+      p.position.y = Math.sin(index * 1.4) * 0.08;
+      p.rotation.z = (index - 2.5) * 0.006;
+      corridor.add(p);
+      portals.push(p);
+    });
 
-    const triangles = new THREE.Group();
-    world.add(triangles);
-    [0.9, 1.45, 2.1, 2.8].forEach((size, i) => {
-      const h = size * 0.75;
-      const g = new THREE.BufferGeometry().setFromPoints([
+    // Longitudinal members make the transition feel like moving through a constructed space.
+    const front = zPositions[zPositions.length - 1];
+    const back = zPositions[0];
+    const halfW = compact ? 2.05 : 2.95;
+    const halfH = compact ? 3.0 : 1.78;
+    [
+      [-halfW, -halfH], [halfW, -halfH], [-halfW, halfH], [halfW, halfH],
+    ].forEach(([x, y], index) => {
+      corridor.add(beamBetween(new THREE.Vector3(x, y, back), new THREE.Vector3(x, y, front), 0.018, index === 2 ? gold : index === 1 ? blue : steel));
+    });
+
+    // Section lines / construction triangles suspended between portals.
+    const sectionMaterial = new THREE.LineBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.18 });
+    const coolLine = new THREE.LineBasicMaterial({ color: 0x7eabba, transparent: true, opacity: 0.13 });
+    for (let i = 0; i < 4; i += 1) {
+      const size = 1.25 + i * 0.42;
+      const h = size * 0.72;
+      const geometry = new THREE.BufferGeometry().setFromPoints([
         new THREE.Vector3(-size / 2, -h / 2, 0),
         new THREE.Vector3(size / 2, -h / 2, 0),
         new THREE.Vector3(size / 2, h / 2, 0),
         new THREE.Vector3(-size / 2, -h / 2, 0),
       ]);
-      const line = new THREE.Line(g, new THREE.LineBasicMaterial({ color: i % 2 ? 0x7eabba : 0xd6c28f, transparent: true, opacity: 0.16 - i * 0.02 }));
-      line.rotation.set(i * 0.16, -0.35 + i * 0.24, i * 0.31);
-      triangles.add(line);
-    });
+      const triangle = new THREE.Line(geometry, i % 2 ? coolLine.clone() : sectionMaterial.clone());
+      triangle.position.set(i % 2 ? -1.4 : 1.4, i * 0.28 - 0.4, -4.6 + i * 2.2);
+      triangle.rotation.set(0.05 * i, -0.12 + i * 0.08, i % 2 ? -0.08 : 0.08);
+      drawings.add(triangle);
+    }
 
-    const particlesCount = 100;
-    const positions = new Float32Array(particlesCount * 3);
-    for (let i = 0; i < particlesCount; i += 1) {
-      const a = i * 2.3999632297;
-      const r = 1 + ((i * 17) % 100) / 100 * 3.5;
-      positions[i * 3] = Math.cos(a) * r;
-      positions[i * 3 + 1] = Math.sin(a * 1.3) * r * 0.55;
-      positions[i * 3 + 2] = -1.2 + Math.sin(a) * r * 0.7;
+    const cutPlane = new THREE.Mesh(
+      new THREE.PlaneGeometry(compact ? 4.6 : 6.8, compact ? 7.1 : 4.5, 12, 8),
+      new THREE.MeshBasicMaterial({ color: 0xe7dfcf, wireframe: true, transparent: true, opacity: 0.045, side: THREE.DoubleSide }),
+    );
+    cutPlane.position.z = -1.1;
+    cutPlane.rotation.y = 0.04;
+    drawings.add(cutPlane);
+
+    const pointsCount = compact ? 54 : 90;
+    const positions = new Float32Array(pointsCount * 3);
+    for (let i = 0; i < pointsCount; i += 1) {
+      positions[i * 3] = (((i * 37) % 100) / 100 - 0.5) * (compact ? 4.8 : 7.2);
+      positions[i * 3 + 1] = (((i * 61) % 100) / 100 - 0.5) * (compact ? 7.2 : 4.8);
+      positions[i * 3 + 2] = -5.8 + ((i * 17) % 100) / 100 * 10;
     }
     const pg = new THREE.BufferGeometry();
     pg.setAttribute("position", new THREE.BufferAttribute(positions, 3));
-    const particles = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xe7dfcf, transparent: true, opacity: 0.34, size: 0.025, sizeAttenuation: true }));
+    const particles = new THREE.Points(pg, new THREE.PointsMaterial({ color: 0xe7dfcf, transparent: true, opacity: 0.27, size: 0.018, sizeAttenuation: true }));
     world.add(particles);
 
-    scene.add(new THREE.HemisphereLight(0xe7dfcf, 0x06080a, 0.7));
-    const key = new THREE.PointLight(0xd6c28f, 7, 12, 2);
-    key.position.set(2.5, 2.7, 4);
+    scene.add(new THREE.HemisphereLight(0xe7dfcf, 0x06080a, 0.62));
+    const key = new THREE.PointLight(0xd6c28f, 7, 15, 2);
+    key.position.set(2.6, 2.8, 5.2);
     scene.add(key);
-    const fill = new THREE.PointLight(0x7eabba, 4, 10, 2);
-    fill.position.set(-3, -1, 2.8);
+    const fill = new THREE.PointLight(0x7eabba, 4, 12, 2);
+    fill.position.set(-3.1, -0.7, 2.8);
     scene.add(fill);
 
     let energy = 0;
@@ -98,10 +136,10 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
     const clock = new THREE.Clock();
 
     const resize = () => {
-      const w = host.clientWidth || window.innerWidth;
-      const h = host.clientHeight || window.innerHeight;
-      renderer.setSize(w, h, false);
-      camera.aspect = w / Math.max(1, h);
+      const width = host.clientWidth || window.innerWidth;
+      const height = host.clientHeight || window.innerHeight;
+      renderer.setSize(width, height, false);
+      camera.aspect = width / Math.max(1, height);
       camera.updateProjectionMatrix();
     };
     resize();
@@ -111,32 +149,30 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
     const animate = () => {
       const t = clock.getElapsedTime();
       const target = activeRef.current ? 1 : 0;
-      energy += (target - energy) * (phaseRef.current === "closing" ? 0.075 : 0.05);
+      energy += (target - energy) * (phaseRef.current === "closing" ? 0.072 : 0.052);
       const closing = phaseRef.current === "closing";
       const opening = phaseRef.current === "opening";
-      const bend = Math.sin(energy * Math.PI);
+      const eased = energy * energy * (3 - 2 * energy);
 
-      world.rotation.y = t * 0.07 + energy * (closing ? 0.72 : -0.36);
-      world.rotation.x = Math.sin(t * 0.3) * 0.04 + bend * 0.13;
-      world.rotation.z = bend * -0.09;
-      world.scale.setScalar(0.62 + energy * (closing ? 1.55 : 1.1));
-      world.position.z = -1.1 + energy * (closing ? 2.65 : 1.2);
-      frame.rotation.y = Math.sin(t * 0.25) * 0.04 + energy * 0.26;
-      frame.scale.setScalar(0.92 + energy * 0.18);
-      triangles.rotation.z = -t * 0.06 - energy * 0.42;
-      triangles.rotation.y = t * 0.04 + energy * 0.2;
-      core.rotation.x += reduced ? 0 : 0.006;
-      core.rotation.y += reduced ? 0 : 0.009;
-      coreWire.rotation.y -= reduced ? 0 : 0.004;
-      particles.rotation.y = -t * 0.025;
-      particles.scale.setScalar(1 + energy * 0.3);
+      world.position.z = closing ? eased * 3.8 : opening ? 3.1 - eased * 3.1 : 0;
+      world.rotation.y = Math.sin(t * 0.18) * 0.015 + (closing ? eased * 0.08 : -eased * 0.035);
+      world.rotation.x = Math.sin(t * 0.22) * 0.008;
 
-      const opacity = Math.min(1, energy * 1.5);
-      renderer.domElement.style.opacity = String(opacity);
-      if (opening) camera.position.z += (7.8 - camera.position.z) * 0.025;
-      else camera.position.z += ((closing ? 6.1 : 7.4) - camera.position.z) * 0.03;
-      camera.lookAt(0, 0.05, 0);
+      portals.forEach((p, index) => {
+        p.position.x = Math.sin(t * 0.33 + index * 0.8) * (reduced ? 0 : 0.025);
+        p.scale.setScalar(1 + Math.sin(t * 0.27 + index) * (reduced ? 0 : 0.004));
+      });
+      drawings.position.z = Math.sin(t * 0.22) * 0.04;
+      drawings.rotation.z = Math.sin(t * 0.16) * 0.01;
+      particles.position.z = closing ? eased * 1.6 : 0;
 
+      const desiredZ = closing ? 7.95 - eased * 2.15 : opening ? 6.0 + eased * 2.15 : 8.2;
+      camera.position.z += (desiredZ - camera.position.z) * 0.07;
+      camera.position.x = Math.sin(eased * Math.PI) * (compact ? 0.08 : 0.22);
+      camera.position.y = 0.2 + Math.sin(eased * Math.PI) * 0.08;
+      camera.lookAt(0, 0.05, -1.3);
+
+      renderer.domElement.style.opacity = String(Math.min(1, energy * 1.45));
       renderer.render(scene, camera);
       raf = requestAnimationFrame(animate);
     };
@@ -149,8 +185,8 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
         const mesh = object as THREE.Mesh;
         if (mesh.geometry) mesh.geometry.dispose();
         if (mesh.material) {
-          const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-          mats.forEach((m) => m.dispose());
+          const materials = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
+          materials.forEach((material) => material.dispose());
         }
       });
       renderer.dispose();
