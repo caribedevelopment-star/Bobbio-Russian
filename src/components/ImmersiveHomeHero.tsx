@@ -11,7 +11,7 @@ import responsive from "./ImmersiveHomeResponsive.module.css";
 
 const brands = [
   "FEBAL CASA",
-  "GRUPPO COLOMBINI",
+  "GRUPO COLOMBINI",
   "GRUPO TJC",
   "IKONO",
   "URBAN PONICS",
