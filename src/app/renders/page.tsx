@@ -4,6 +4,7 @@ import ClayCompare from "../../components/ClayCompare";
 import RenderLightSequence, { type LightSequenceItem } from "../../components/RenderLightSequence";
 import Lexicon from "../../components/Lexicon";
 import styles from "./renders.module.css";
+import refine from "./renders-refinement.module.css";
 import process from "./process.module.css";
 
 export const metadata: Metadata = { title: "Studies in Light", description: "Interior visualisation process and render gallery by Bobbio Russian." };
@@ -56,7 +57,7 @@ const workflow = [
 export default function RendersPage() {
   return (
     <main className="pageEnter pagePadTop">
-      <header className={styles.header}>
+      <header className={`${styles.header} ${refine.header}`}>
         <p className="eyebrow" data-reveal>03 / <Lexicon term="visions" /></p>
         <h1 data-reveal><Lexicon term="visions" /><br /><em>Before matter.</em></h1>
         <div data-reveal><p>A visual archive, but also a record of how a space develops. The image is only the last layer of a process that begins with drawing, proportion and spatial decisions.</p><span>26 selected frames · process + final imagery</span></div>
@@ -92,14 +93,14 @@ export default function RendersPage() {
         <p className={process.compareNote}>Interactive study mode / the final render image itself is not altered.</p>
       </section>
 
-      <section className={styles.manifesto}>
+      <section className={`${styles.manifesto} ${refine.manifesto}`}>
         <p className="eyebrow" data-reveal>VISUALISATION AS DESIGN</p>
         <h2 data-reveal>Not an image of the end.<br /><em>A tool for deciding the beginning.</em></h2>
         <div className={styles.manifestoNotes} data-reveal><span>LIGHT</span><span>PROPORTION</span><span>MATERIAL</span><span>ATMOSPHERE</span><span>DETAIL</span></div>
       </section>
 
-      <section className={styles.gallery} data-reveal><RenderGallery items={items} /></section>
-      <section className={styles.note}><p>Visual archive / selected residential and interior studies. Open any image to enter the full-screen viewer.</p></section>
+      <section className={`${styles.gallery} ${refine.gallery}`} data-reveal><RenderGallery items={items} /></section>
+      <section className={`${styles.note} ${refine.note}`}><p>Visual archive / selected residential and interior studies. Open any image to enter the full-screen viewer.</p></section>
     </main>
   );
 }
