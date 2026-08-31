@@ -74,6 +74,7 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
       portals.push(p);
     });
 
+    // Longitudinal members make the transition feel like moving through a constructed space.
     const front = zPositions[zPositions.length - 1];
     const back = zPositions[0];
     const halfW = compact ? 2.05 : 2.95;
@@ -84,6 +85,7 @@ export default function RouteTransitionCanvas({ className, active, phase }: Prop
       corridor.add(beamBetween(new THREE.Vector3(x, y, back), new THREE.Vector3(x, y, front), 0.018, index === 2 ? gold : index === 1 ? blue : steel));
     });
 
+    // Section lines / construction triangles suspended between portals.
     const sectionMaterial = new THREE.LineBasicMaterial({ color: 0xd6c28f, transparent: true, opacity: 0.18 });
     const coolLine = new THREE.LineBasicMaterial({ color: 0x7eabba, transparent: true, opacity: 0.13 });
     for (let i = 0; i < 4; i += 1) {
