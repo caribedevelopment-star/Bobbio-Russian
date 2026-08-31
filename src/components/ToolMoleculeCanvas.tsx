@@ -4,7 +4,19 @@ import { useEffect, useRef } from "react";
 
 type Family = "design" | "visual" | "creative" | "code" | "data" | null;
 type Props = { className?: string; family: Family; hovered?: number };
-type Node = { x: number; y: number; ox: number; oy: number; vx: number; vy: number; r: number; seed: number; depth: number; lobe: number };
+type Node = {
+  x: number;
+  y: number;
+  ox: number;
+  oy: number;
+  vx: number;
+  vy: number;
+  r: number;
+  seed: number;
+  depth: number;
+  lobe: number;
+  trail: Array<[number, number]>;
+};
 
 const palette = {
   design: [214, 194, 143],
@@ -27,27 +39,29 @@ export default function ToolMoleculeCanvas({ className, family, hovered = -1 }: 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const compact = window.matchMedia("(max-width: 760px)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const pointer = { x: 0.5, y: 0.5, tx: 0.5, ty: 0.5, active: false };
     let width = 1;
     let height = 1;
-    let raf = 0;
     let time = 0;
+    let raf = 0;
     let nodes: Node[] = [];
 
     const buildNodes = () => {
-      const count = compact ? 44 : 86;
+      const count = compact ? 76 : 168;
       nodes = Array.from({ length: count }, (_, i) => {
-        const lobe = i % 7;
-        const lobeAngle = lobe * 2.3999632297 + (i % 3) * 0.13;
-        const lobeRadius = 0.07 + (lobe % 3) * 0.026;
-        const cx = 0.5 + Math.cos(lobeAngle) * (0.10 + (lobe % 2) * 0.075);
-        const cy = 0.5 + Math.sin(lobeAngle) * (0.07 + (lobe % 3) * 0.035);
-        const localAngle = i * 1.618 + lobe * 0.7;
-        const localRadius = 0.025 + ((i * 17) % 100) / 100 * 0.11;
-        const ox = cx + Math.cos(localAngle) * localRadius + Math.sin(i * 0.77) * 0.012;
-        const oy = cy + Math.sin(localAngle) * localRadius * 0.72 + Math.cos(i * 0.53) * 0.009;
+        const lobe = i % 11;
+        const lobeAngle = lobe * 2.3999632297 + (i % 4) * 0.18;
+        const spreadX = compact ? 0.26 : 0.34;
+        const spreadY = compact ? 0.25 : 0.31;
+        const lobeRadius = 0.045 + (lobe % 4) * 0.026;
+        const cx = 0.5 + Math.cos(lobeAngle) * spreadX * (0.36 + (lobe % 3) * 0.1);
+        const cy = 0.51 + Math.sin(lobeAngle) * spreadY * (0.34 + (lobe % 4) * 0.07);
+        const angle = i * 1.6180339887 + lobe * 0.37;
+        const radius = 0.018 + ((i * 31) % 100) / 100 * lobeRadius;
+        const ox = cx + Math.cos(angle) * radius + Math.sin(i * 0.73) * 0.012;
+        const oy = cy + Math.sin(angle) * radius * 0.82 + Math.cos(i * 0.41) * 0.01;
         return {
           x: ox,
           y: oy,
@@ -55,10 +69,11 @@ export default function ToolMoleculeCanvas({ className, family, hovered = -1 }: 
           oy,
           vx: 0,
           vy: 0,
-          r: 0.65 + ((i * 29) % 100) / 100 * 2.35,
-          seed: (i * 0.731) % 11,
-          depth: 0.35 + ((i * 13) % 60) / 100,
+          r: 0.65 + ((i * 29) % 100) / 100 * 2.8,
+          seed: (i * 0.731) % 12,
+          depth: 0.28 + ((i * 17) % 68) / 100,
           lobe,
+          trail: [],
         };
       });
     };
@@ -67,7 +82,7 @@ export default function ToolMoleculeCanvas({ className, family, hovered = -1 }: 
       const rect = canvas.getBoundingClientRect();
       width = Math.max(1, rect.width);
       height = Math.max(1, rect.height);
-      const dpr = Math.min(window.devicePixelRatio || 1, compact ? 1.2 : 1.6);
+      const dpr = Math.min(window.devicePixelRatio || 1, compact ? 1.15 : 1.55);
       canvas.width = Math.round(width * dpr);
       canvas.height = Math.round(height * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -88,138 +103,245 @@ export default function ToolMoleculeCanvas({ className, family, hovered = -1 }: 
     ro.observe(canvas);
     resize();
 
+    const focusPoint = () => {
+      const h = Math.max(0, hoverRef.current);
+      const angle = h * 2.3999632297 - 0.65;
+      const radius = compact ? 0.14 : 0.22;
+      return {
+        x: 0.5 + Math.cos(angle) * radius,
+        y: 0.5 + Math.sin(angle) * radius * 0.72,
+      };
+    };
+
     const updateNode = (node: Node, index: number, current: Exclude<Family, null>) => {
-      const hoveredIndex = hoverRef.current;
-      const hoverAngle = Math.max(0, hoveredIndex) * 2.3999632297 + time * 0.08;
-      const focusX = 0.5 + Math.cos(hoverAngle) * 0.13;
-      const focusY = 0.5 + Math.sin(hoverAngle) * 0.095;
-      const dxFocus = node.x - focusX;
-      const dyFocus = node.y - focusY;
-      const focusDist = Math.max(0.02, Math.hypot(dxFocus, dyFocus));
+      const focus = focusPoint();
+      const dxFocus = node.x - focus.x;
+      const dyFocus = node.y - focus.y;
+      const focusDist = Math.max(0.018, Math.hypot(dxFocus, dyFocus));
       const dxPointer = node.x - pointer.x;
       const dyPointer = node.y - pointer.y;
       const pointerDist = Math.max(0.018, Math.hypot(dxPointer, dyPointer));
+      const hot = hoverRef.current >= 0;
       let tx = node.ox;
       let ty = node.oy;
 
       if (current === "design") {
-        const snap = index % 4 === 0 ? 0.035 : 0.052;
-        tx = Math.round((node.ox + Math.sin(time * 0.4 + node.seed) * 0.009) / snap) * snap;
-        ty = Math.round((node.oy + Math.cos(time * 0.36 + node.seed) * 0.008) / snap) * snap;
-        if (hoveredIndex >= 0 && focusDist < 0.22) {
-          tx += dxFocus / focusDist * 0.032;
-          ty += dyFocus / focusDist * 0.032;
-        }
-        if (pointer.active && pointerDist < 0.18) {
-          tx += dxPointer / pointerDist * 0.018;
-          ty += dyPointer / pointerDist * 0.018;
+        const snapX = index % 3 === 0 ? 0.032 : 0.048;
+        const snapY = index % 4 === 0 ? 0.038 : 0.052;
+        tx = Math.round((node.ox + Math.sin(time * 0.28 + node.seed) * 0.008) / snapX) * snapX;
+        ty = Math.round((node.oy + Math.cos(time * 0.31 + node.seed) * 0.007) / snapY) * snapY;
+        if (hot && focusDist < 0.29) {
+          const force = (0.29 - focusDist) * 0.2;
+          tx += dxFocus / focusDist * force;
+          ty += dyFocus / focusDist * force;
         }
       } else if (current === "visual") {
-        const wave = Math.sin(time * 1.35 - focusDist * 24 + node.seed) * (hoveredIndex >= 0 ? 0.018 : 0.008);
-        tx = node.ox + Math.cos(time * 0.32 + node.seed) * 0.012 + dxFocus / focusDist * wave;
-        ty = node.oy + Math.sin(time * 0.37 + node.seed) * 0.011 + dyFocus / focusDist * wave;
+        const waveA = Math.sin(time * 1.4 - focusDist * 27 + node.seed);
+        const waveB = Math.cos(time * 0.82 + (node.x + node.y) * 20 + node.seed);
+        const amp = hot ? 0.026 : 0.012;
+        tx = node.ox + Math.cos(time * 0.34 + node.seed) * 0.014 + (dxFocus / focusDist) * waveA * amp;
+        ty = node.oy + Math.sin(time * 0.38 + node.seed) * 0.013 + (dyFocus / focusDist) * waveB * amp;
       } else if (current === "creative") {
         const cx = node.ox - 0.5;
         const cy = node.oy - 0.5;
-        const a = Math.atan2(cy, cx) + time * (0.022 + node.depth * 0.012) + Math.sin(time * 0.24 + node.seed) * 0.1;
-        const r = Math.hypot(cx, cy) * (1 + Math.sin(time * 0.55 + index * 0.31) * 0.035);
-        tx = 0.5 + Math.cos(a) * r;
-        ty = 0.5 + Math.sin(a) * r * 0.88;
-        if (hoveredIndex >= 0 && focusDist < 0.2) {
-          tx += Math.cos(a + Math.PI * 0.5) * 0.025;
-          ty += Math.sin(a + Math.PI * 0.5) * 0.025;
+        const baseRadius = Math.hypot(cx, cy);
+        const twist = time * (0.026 + node.depth * 0.014) + Math.sin(time * 0.22 + node.seed) * 0.14;
+        const a = Math.atan2(cy, cx) + twist;
+        const breathing = 1 + Math.sin(time * 0.62 + index * 0.27) * 0.055;
+        tx = 0.5 + Math.cos(a) * baseRadius * breathing;
+        ty = 0.5 + Math.sin(a) * baseRadius * 0.9 * breathing;
+        if (hot && focusDist < 0.3) {
+          tx += Math.cos(a + Math.PI / 2) * (0.038 * (1 - focusDist / 0.3));
+          ty += Math.sin(a + Math.PI / 2) * (0.038 * (1 - focusDist / 0.3));
         }
       } else if (current === "code") {
-        const attractor = node.lobe % 3;
-        const ax = 0.5 + Math.cos(attractor * 2.094 + time * 0.06) * 0.13;
-        const ay = 0.5 + Math.sin(attractor * 2.094 + time * 0.06) * 0.085;
-        tx = node.ox * 0.78 + ax * 0.22 + Math.sin(time * 0.4 + node.seed) * 0.007;
-        ty = node.oy * 0.78 + ay * 0.22 + Math.cos(time * 0.43 + node.seed) * 0.007;
-        if (hoveredIndex >= 0 && focusDist < 0.23) {
-          tx += (focusX - node.x) * 0.06;
-          ty += (focusY - node.y) * 0.06;
+        const attractor = node.lobe % 4;
+        const a = attractor * (Math.PI / 2) + time * 0.055;
+        const ax = 0.5 + Math.cos(a) * 0.22;
+        const ay = 0.5 + Math.sin(a) * 0.145;
+        const pulse = Math.sin(time * 1.45 + node.seed) * 0.008;
+        tx = node.ox * 0.72 + ax * 0.28 + pulse;
+        ty = node.oy * 0.72 + ay * 0.28 - pulse;
+        if (hot && focusDist < 0.34) {
+          tx += (focus.x - node.x) * 0.12;
+          ty += (focus.y - node.y) * 0.12;
         }
       } else {
-        const lane = (node.lobe % 5) / 4;
-        tx = 0.33 + lane * 0.34 + Math.sin(time * 0.2 + node.seed) * 0.014;
-        ty = node.oy + Math.sin(time * (0.18 + node.depth * 0.08) + node.seed) * 0.035;
-        if (hoveredIndex >= 0) tx += Math.sin(time * 1.4 + node.seed) * 0.01;
+        const lanes = compact ? 5 : 8;
+        const lane = node.lobe % lanes;
+        const xBase = 0.24 + (lane / Math.max(1, lanes - 1)) * 0.52;
+        tx = xBase + Math.sin(time * 0.27 + node.seed) * 0.016;
+        ty = node.oy + Math.sin(time * (0.22 + node.depth * 0.09) + node.seed) * 0.045;
+        if (hot) ty += Math.sin(time * 1.8 + node.seed) * 0.012;
       }
 
-      const stiffness = reduced ? 0.18 : 0.045 + node.depth * 0.014;
+      if (pointer.active && pointerDist < 0.19) {
+        const repulse = (0.19 - pointerDist) * (current === "creative" ? -0.14 : 0.12);
+        tx += dxPointer / pointerDist * repulse;
+        ty += dyPointer / pointerDist * repulse;
+      }
+
+      const stiffness = reduced ? 0.18 : 0.04 + node.depth * 0.018;
       node.vx += (tx - node.x) * stiffness;
       node.vy += (ty - node.y) * stiffness;
-      node.vx *= 0.87;
-      node.vy *= 0.87;
+      node.vx *= 0.86;
+      node.vy *= 0.86;
       node.x += node.vx;
       node.y += node.vy;
+
+      if (!reduced) {
+        node.trail.unshift([node.x, node.y]);
+        if (node.trail.length > (compact ? 5 : 9)) node.trail.pop();
+      }
     };
 
-    const drawOrganicContours = (current: Exclude<Family, null>, rgb: readonly number[]) => {
-      const hoveredIndex = hoverRef.current;
-      const energy = hoveredIndex >= 0 ? 1 : 0;
-      for (let ring = 0; ring < 3; ring += 1) {
-        const points = 84;
-        ctx.beginPath();
-        for (let i = 0; i <= points; i += 1) {
-          const a = (i / points) * Math.PI * 2;
-          const harmonics = Math.sin(a * (3 + ring) + time * (0.18 + ring * 0.05)) * 0.018 + Math.sin(a * 7 - time * 0.11) * 0.009;
-          const rx = width * (0.18 + ring * 0.075 + harmonics + energy * 0.004);
-          const ry = height * (0.16 + ring * 0.072 + harmonics * 0.8);
-          const x = width * 0.5 + Math.cos(a) * rx;
-          const y = height * 0.5 + Math.sin(a) * ry;
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.032 + ring * 0.012 + energy * 0.018})`;
-        ctx.lineWidth = ring === 1 ? 0.8 : 0.55;
-        if (current === "code" && ring === 1) ctx.setLineDash([3, 7]); else ctx.setLineDash([]);
-        ctx.stroke();
+    const contour = (rgb: readonly number[], current: Exclude<Family, null>, radiusScale: number, phase: number, alpha: number) => {
+      const points = 110;
+      ctx.beginPath();
+      for (let i = 0; i <= points; i += 1) {
+        const a = (i / points) * Math.PI * 2;
+        const n = Math.sin(a * 3 + time * 0.17 + phase) * 0.035 + Math.sin(a * 7 - time * 0.13 + phase) * 0.018 + Math.cos(a * 11 + time * 0.08) * 0.008;
+        const rx = width * radiusScale * (1 + n);
+        const ry = height * radiusScale * 0.68 * (1 + n * 0.8);
+        const shear = current === "data" ? Math.sin(a * 2 + phase) * width * 0.025 : 0;
+        const x = width * 0.5 + Math.cos(a) * rx + shear;
+        const y = height * 0.51 + Math.sin(a) * ry;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
       }
+      ctx.closePath();
+      ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;
+      ctx.lineWidth = current === "design" ? 0.55 : 0.8;
+      if (current === "code") ctx.setLineDash([3, 8]);
+      ctx.stroke();
       ctx.setLineDash([]);
+    };
+
+    const drawFamilyField = (current: Exclude<Family, null>, rgb: readonly number[]) => {
+      const hot = hoverRef.current >= 0;
+      contour(rgb, current, compact ? 0.28 : 0.27, 0, hot ? 0.12 : 0.055);
+      contour(rgb, current, compact ? 0.34 : 0.35, 1.7, hot ? 0.08 : 0.035);
+      contour(rgb, current, compact ? 0.4 : 0.43, 3.1, hot ? 0.055 : 0.024);
+
+      if (current === "design") {
+        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.13 : 0.06})`;
+        ctx.lineWidth = 0.5;
+        const stepX = compact ? 70 : 92;
+        const stepY = compact ? 62 : 78;
+        for (let x = width * 0.2; x <= width * 0.8; x += stepX) { ctx.beginPath(); ctx.moveTo(x, height * 0.18); ctx.lineTo(x, height * 0.83); ctx.stroke(); }
+        for (let y = height * 0.22; y <= height * 0.78; y += stepY) { ctx.beginPath(); ctx.moveTo(width * 0.17, y); ctx.lineTo(width * 0.83, y); ctx.stroke(); }
+      }
+
+      if (current === "visual") {
+        const cx = (pointer.active ? pointer.x : 0.52) * width;
+        const cy = (pointer.active ? pointer.y : 0.5) * height;
+        for (let k = 0; k < 8; k += 1) {
+          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${Math.max(0.015, 0.13 - k * 0.014)})`;
+          ctx.beginPath();
+          ctx.ellipse(cx, cy, 34 + k * 28 + Math.sin(time * 1.7 + k) * 8, 22 + k * 18, time * 0.025, 0, Math.PI * 2);
+          ctx.stroke();
+        }
+      }
+
+      if (current === "creative") {
+        for (let arm = 0; arm < 6; arm += 1) {
+          ctx.beginPath();
+          for (let i = 0; i < 80; i += 1) {
+            const p = i / 79;
+            const a = arm * Math.PI / 3 + p * Math.PI * 1.5 + time * 0.08;
+            const r = p * Math.min(width, height) * 0.32;
+            const x = width * 0.5 + Math.cos(a) * r;
+            const y = height * 0.5 + Math.sin(a) * r * 0.72;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+          }
+          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.075 : 0.03})`;
+          ctx.stroke();
+        }
+      }
+
+      if (current === "code") {
+        const attractors = compact ? 3 : 4;
+        for (let i = 0; i < attractors; i += 1) {
+          const a = i * (Math.PI * 2 / attractors) + time * 0.04;
+          const x = width * (0.5 + Math.cos(a) * 0.22);
+          const y = height * (0.5 + Math.sin(a) * 0.15);
+          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.14 : 0.055})`;
+          ctx.setLineDash([2, 8]);
+          ctx.beginPath(); ctx.arc(x, y, 24 + Math.sin(time * 1.5 + i) * 7, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+
+      if (current === "data") {
+        const rows = compact ? 8 : 13;
+        for (let r = 0; r < rows; r += 1) {
+          const y = height * (0.2 + (r / Math.max(1, rows - 1)) * 0.62);
+          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.022 + (r % 4) * 0.012})`;
+          ctx.beginPath();
+          for (let i = 0; i <= 50; i += 1) {
+            const p = i / 50;
+            const x = width * (0.17 + p * 0.68);
+            const yy = y + Math.sin(p * 12 + time * 0.8 + r) * (4 + r % 3);
+            if (i === 0) ctx.moveTo(x, yy); else ctx.lineTo(x, yy);
+          }
+          ctx.stroke();
+        }
+      }
     };
 
     const draw = () => {
       time += reduced ? 0 : 0.016;
-      pointer.x += (pointer.tx - pointer.x) * 0.06;
-      pointer.y += (pointer.ty - pointer.y) * 0.06;
+      pointer.x += (pointer.tx - pointer.x) * 0.065;
+      pointer.y += (pointer.ty - pointer.y) * 0.065;
       ctx.clearRect(0, 0, width, height);
       const current = familyRef.current;
       if (!current) {
         raf = requestAnimationFrame(draw);
         return;
       }
+
       const rgb = palette[current];
       nodes.forEach((node, index) => updateNode(node, index, current));
 
       ctx.save();
       ctx.globalCompositeOperation = "lighter";
-      drawOrganicContours(current, rgb);
+      drawFamilyField(current, rgb);
+
+      // Trails create the fluid TouchDesigner-like continuity without repeating a fixed orbit.
+      nodes.forEach((node) => {
+        if (node.trail.length < 2) return;
+        ctx.beginPath();
+        node.trail.forEach(([x, y], index) => {
+          const px = x * width;
+          const py = y * height;
+          if (index === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        });
+        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.018 + node.depth * 0.028})`;
+        ctx.lineWidth = 0.45 + node.depth * 0.35;
+        ctx.stroke();
+      });
 
       for (let i = 0; i < nodes.length; i += 1) {
-        const maxLinks = current === "code" ? 5 : current === "creative" ? 3 : 4;
+        const a = nodes[i];
         let links = 0;
+        const maxLinks = current === "code" ? 6 : current === "creative" ? 3 : 4;
         for (let j = i + 1; j < nodes.length && links < maxLinks; j += 1) {
-          const a = nodes[i];
           const b = nodes[j];
           const dx = (a.x - b.x) * width;
           const dy = (a.y - b.y) * height;
-          const d = Math.hypot(dx, dy);
-          const threshold = current === "code" ? 126 : current === "creative" ? 108 : current === "data" ? 92 : 112;
-          if (d > threshold) continue;
+          const distance = Math.hypot(dx, dy);
+          const threshold = compact ? 82 : current === "code" ? 145 : current === "creative" ? 120 : 132;
+          if (distance > threshold) continue;
           links += 1;
-          const alpha = (1 - d / threshold) * (hoverRef.current >= 0 ? 0.15 : 0.065) * (0.65 + a.depth * 0.45);
+          const alpha = (1 - distance / threshold) * (hoverRef.current >= 0 ? 0.17 : 0.07) * (0.6 + a.depth * 0.45);
           ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${alpha})`;
-          ctx.lineWidth = current === "design" ? 0.45 : 0.65;
+          ctx.lineWidth = current === "design" ? 0.45 : 0.7;
           ctx.beginPath();
           ctx.moveTo(a.x * width, a.y * height);
           if (current === "creative" || current === "visual") {
-            const mx = (a.x + b.x) * 0.5 * width;
-            const my = (a.y + b.y) * 0.5 * height;
-            ctx.quadraticCurveTo(mx + Math.sin(time + i * 0.4) * 9, my + Math.cos(time + j * 0.35) * 9, b.x * width, b.y * height);
-          } else {
-            ctx.lineTo(b.x * width, b.y * height);
-          }
+            const mx = (a.x + b.x) * width * 0.5;
+            const my = (a.y + b.y) * height * 0.5;
+            ctx.quadraticCurveTo(mx + Math.sin(time + i) * 14, my + Math.cos(time * 0.8 + j) * 14, b.x * width, b.y * height);
+          } else ctx.lineTo(b.x * width, b.y * height);
           ctx.stroke();
         }
       }
@@ -227,55 +349,30 @@ export default function ToolMoleculeCanvas({ className, family, hovered = -1 }: 
       nodes.forEach((node, index) => {
         const x = node.x * width;
         const y = node.y * height;
-        const hot = hoverRef.current >= 0 && (index + hoverRef.current) % 11 < 2;
-        const pulse = Math.sin(time * (0.7 + node.depth * 0.8) + node.seed) * 0.35;
-        const radius = node.r + pulse + (hot ? 0.8 : 0);
-        const glow = ctx.createRadialGradient(x, y, 0, x, y, Math.max(5, radius * (7 + node.depth * 5)));
-        glow.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.42 : 0.17 + node.depth * 0.08})`);
+        const hot = hoverRef.current >= 0 && (index + hoverRef.current * 3) % 13 < 3;
+        const pulse = Math.sin(time * (0.72 + node.depth * 0.9) + node.seed) * 0.48;
+        const radius = Math.max(0.5, node.r + pulse + (hot ? 1.1 : 0));
+        const glowRadius = radius * (8 + node.depth * 7);
+        const glow = ctx.createRadialGradient(x, y, 0, x, y, glowRadius);
+        glow.addColorStop(0, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.44 : 0.16 + node.depth * 0.09})`);
         glow.addColorStop(1, `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0)`);
         ctx.fillStyle = glow;
+        ctx.beginPath(); ctx.arc(x, y, glowRadius, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.9 : 0.34 + node.depth * 0.22})`;
         ctx.beginPath();
-        ctx.arc(x, y, Math.max(5, radius * (7 + node.depth * 5)), 0, Math.PI * 2);
-        ctx.fill();
-        ctx.fillStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${hot ? 0.85 : 0.32 + node.depth * 0.22})`;
-        ctx.beginPath();
-        ctx.ellipse(x, y, Math.max(0.65, radius * (0.85 + node.depth * 0.25)), Math.max(0.55, radius * (0.6 + node.depth * 0.18)), node.seed, 0, Math.PI * 2);
+        ctx.ellipse(x, y, radius * (0.95 + node.depth * 0.3), radius * (0.55 + node.depth * 0.24), node.seed + time * 0.03, 0, Math.PI * 2);
         ctx.fill();
       });
 
       if (pointer.active) {
         const x = pointer.x * width;
         const y = pointer.y * height;
-        if (current === "visual") {
-          for (let k = 0; k < 4; k += 1) {
-            ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.14 - k * 0.025})`;
-            ctx.beginPath();
-            ctx.arc(x, y, 20 + k * 18 + Math.sin(time * 2.1 + k) * 5, 0, Math.PI * 2);
-            ctx.stroke();
-          }
-        } else if (current === "design") {
-          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.2)`;
-          ctx.beginPath();
-          ctx.moveTo(x - 32, y); ctx.lineTo(x + 32, y);
-          ctx.moveTo(x, y - 32); ctx.lineTo(x, y + 32);
-          ctx.moveTo(x - 22, y + 22); ctx.lineTo(x + 22, y - 22);
-          ctx.stroke();
-        } else if (current === "code") {
-          ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.2)`;
-          ctx.setLineDash([2, 6]);
-          ctx.beginPath(); ctx.arc(x, y, 38 + Math.sin(time * 2) * 6, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
-        } else if (current === "creative") {
-          for (let k = 0; k < 3; k += 1) {
-            ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.17 - k * 0.035})`;
-            ctx.beginPath(); ctx.ellipse(x, y, 30 + k * 13, 18 + k * 8, time * 0.2 + k, time, time + Math.PI * 1.6); ctx.stroke();
-          }
-        } else {
-          for (let k = -3; k <= 3; k += 1) {
-            ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},${0.055 + (3 - Math.abs(k)) * 0.018})`;
-            ctx.beginPath(); ctx.moveTo(x - 74, y + k * 8); ctx.lineTo(x + 74, y + k * 8); ctx.stroke();
-          }
-        }
+        const size = hoverRef.current >= 0 ? 56 : 38;
+        ctx.strokeStyle = `rgba(${rgb[0]},${rgb[1]},${rgb[2]},0.2)`;
+        ctx.beginPath(); ctx.arc(x, y, size + Math.sin(time * 2) * 7, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 18, y); ctx.lineTo(x + 18, y); ctx.moveTo(x, y - 18); ctx.lineTo(x, y + 18); ctx.stroke();
       }
+
       ctx.restore();
       raf = requestAnimationFrame(draw);
     };
