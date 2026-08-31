@@ -1,6 +1,7 @@
 import HomeJourney from "../components/HomeJourney";
 import HomeLoader from "../components/HomeLoader";
 import ImmersiveHomeHero from "../components/ImmersiveHomeHero";
+import HomeThresholdTransition from "../components/HomeThresholdTransition";
 import styles from "./home.module.css";
 
 export default function Home() {
@@ -8,6 +9,7 @@ export default function Home() {
     <main className="pageEnter">
       <HomeLoader />
       <ImmersiveHomeHero />
+      <HomeThresholdTransition />
       <HomeJourney />
 
       <footer className={styles.footer}>
