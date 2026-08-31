@@ -4,32 +4,34 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import HomeLivingField from "./HomeLivingField";
 import HomeWorldCanvas from "./HomeWorldCanvas";
+import ToolMoleculeCanvas from "./ToolMoleculeCanvas";
 import styles from "./HomeJourney.module.css";
+import molecule from "./ToolMolecules.module.css";
 
 type Family = "design" | "visual" | "creative" | "code" | "data";
-type Tool = { name: string; short: string; note: string; family: Family; src?: string };
+type Tool = { name: string; short: string; note: string; family: Family; company: string; src?: string };
 
 const tools: Tool[] = [
-  { name: "AutoCAD", short: "AC", note: "draw / dimension", family: "design", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
-  { name: "Revit", short: "RV", note: "BIM / coordinate", family: "design", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
-  { name: "SketchUp", short: "SU", note: "model / iterate", family: "design", src: "https://cdn.simpleicons.org/sketchup/FFFFFF" },
-  { name: "BIM Systems", short: "BIM", note: "information / delivery", family: "design", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
-  { name: "D5 Render", short: "D5", note: "material / light", family: "visual", src: "https://www.d5render.com/favicon.ico" },
-  { name: "Twinmotion", short: "TM", note: "immersive / 360°", family: "visual", src: "https://www.twinmotion.com/favicon.ico" },
-  { name: "Unreal Engine", short: "UE", note: "realtime / cinematic", family: "visual", src: "https://cdn.simpleicons.org/unrealengine/FFFFFF" },
-  { name: "V-Ray", short: "VR", note: "fidelity / material", family: "visual", src: "https://www.chaos.com/favicon.ico" },
-  { name: "Blender", short: "BL", note: "geometry / assets", family: "visual", src: "https://cdn.simpleicons.org/blender/FFFFFF" },
-  { name: "Photoshop", short: "PS", note: "image / post", family: "creative", src: "https://cdn.simpleicons.org/adobephotoshop/FFFFFF" },
-  { name: "Illustrator", short: "AI", note: "graphic / vector", family: "creative", src: "https://cdn.simpleicons.org/adobeillustrator/FFFFFF" },
-  { name: "InDesign", short: "ID", note: "layout / editorial", family: "creative", src: "https://cdn.simpleicons.org/adobeindesign/FFFFFF" },
-  { name: "Premiere Pro", short: "PR", note: "film / sequence", family: "creative", src: "https://cdn.simpleicons.org/adobepremierepro/FFFFFF" },
-  { name: "After Effects", short: "AE", note: "motion / composite", family: "creative", src: "https://cdn.simpleicons.org/adobeaftereffects/FFFFFF" },
-  { name: "Visual Studio Code", short: "VS", note: "code / prototype", family: "code", src: "https://cdn.simpleicons.org/visualstudiocode/FFFFFF" },
-  { name: "Codex", short: "CX", note: "AI / build / iterate", family: "code", src: "https://cdn.simpleicons.org/openai/FFFFFF" },
-  { name: "APIs", short: "API", note: "connect / automate", family: "code" },
-  { name: "SQL", short: "SQL", note: "query / structure", family: "data", src: "https://cdn.simpleicons.org/postgresql/FFFFFF" },
-  { name: "Supabase", short: "SB", note: "database / realtime", family: "data", src: "https://cdn.simpleicons.org/supabase/FFFFFF" },
-  { name: "Excel", short: "XL", note: "analyse / organise", family: "data", src: "https://cdn.simpleicons.org/microsoftexcel/FFFFFF" },
+  { name: "AutoCAD", short: "AC", note: "draw / dimension", family: "design", company: "Autodesk", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
+  { name: "Revit", short: "RV", note: "BIM / coordinate", family: "design", company: "Autodesk", src: "https://cdn.simpleicons.org/autodesk/FFFFFF" },
+  { name: "SketchUp", short: "SU", note: "model / iterate", family: "design", company: "Trimble", src: "https://cdn.simpleicons.org/sketchup/FFFFFF" },
+  { name: "BIM Systems", short: "BIM", note: "information / delivery", family: "design", company: "Open BIM", src: "https://cdn.simpleicons.org/building/FFFFFF" },
+  { name: "D5 Render", short: "D5", note: "material / light", family: "visual", company: "D5", src: "https://www.d5render.com/favicon.ico" },
+  { name: "Twinmotion", short: "TM", note: "immersive / 360°", family: "visual", company: "Epic Games", src: "https://www.twinmotion.com/favicon.ico" },
+  { name: "Unreal Engine", short: "UE", note: "realtime / cinematic", family: "visual", company: "Epic Games", src: "https://cdn.simpleicons.org/unrealengine/FFFFFF" },
+  { name: "V-Ray", short: "VR", note: "fidelity / material", family: "visual", company: "Chaos", src: "https://www.chaos.com/favicon.ico" },
+  { name: "Blender", short: "BL", note: "geometry / assets", family: "visual", company: "Blender", src: "https://cdn.simpleicons.org/blender/FFFFFF" },
+  { name: "Photoshop", short: "PS", note: "image / post", family: "creative", company: "Adobe", src: "https://cdn.simpleicons.org/adobephotoshop/FFFFFF" },
+  { name: "Illustrator", short: "AI", note: "graphic / vector", family: "creative", company: "Adobe", src: "https://cdn.simpleicons.org/adobeillustrator/FFFFFF" },
+  { name: "InDesign", short: "ID", note: "layout / editorial", family: "creative", company: "Adobe", src: "https://cdn.simpleicons.org/adobeindesign/FFFFFF" },
+  { name: "Premiere Pro", short: "PR", note: "film / sequence", family: "creative", company: "Adobe", src: "https://cdn.simpleicons.org/adobepremierepro/FFFFFF" },
+  { name: "After Effects", short: "AE", note: "motion / composite", family: "creative", company: "Adobe", src: "https://cdn.simpleicons.org/adobeaftereffects/FFFFFF" },
+  { name: "Visual Studio Code", short: "VS", note: "code / prototype", family: "code", company: "Microsoft", src: "https://cdn.simpleicons.org/visualstudiocode/FFFFFF" },
+  { name: "Codex", short: "CX", note: "AI / build / iterate", family: "code", company: "OpenAI", src: "https://cdn.simpleicons.org/openai/FFFFFF" },
+  { name: "APIs", short: "API", note: "connect / automate", family: "code", company: "Web Systems" },
+  { name: "SQL", short: "SQL", note: "query / structure", family: "data", company: "PostgreSQL", src: "https://cdn.simpleicons.org/postgresql/FFFFFF" },
+  { name: "Supabase", short: "SB", note: "database / realtime", family: "data", company: "Supabase", src: "https://cdn.simpleicons.org/supabase/FFFFFF" },
+  { name: "Excel", short: "XL", note: "analyse / organise", family: "data", company: "Microsoft", src: "https://cdn.simpleicons.org/microsoftexcel/FFFFFF" },
 ];
 
 const familyMeta: Record<Family, { index: string; title: string; emphasis: string; eyebrow: string; body: string }> = {
@@ -43,7 +45,7 @@ const familyMeta: Record<Family, { index: string; title: string; emphasis: strin
 const chapters = [
   ["01", "ATELIER", "/practice", "Architecture, interiors + direction", "SPACE / DETAIL / SYSTEM"],
   ["02", "CULTIVATED MATTER", "/work", "Bio-design, systems + Urban Ponics", "LIVING / DIGITAL / EXPERIMENTAL"],
-  ["03", "STUDIES IN LIGHT", "/renders", "Process, tools + visualisation", "DRAW / MODEL / LIGHT"],
+  ["03", "STUDIES IN LIGHT", "/renders", "Process + visualisation", "DRAW / MODEL / LIGHT"],
   ["04", "PROVENANCE", "/profile", "Origins, map + formation", "CARACAS / ITALY / MADRID"],
 ] as const;
 
@@ -52,10 +54,10 @@ const steps = ["ORIGIN", "DRAW", "MODEL", "EDIT", "BUILD", "DATA", "ENTER"];
 function BrandOrb({ tool }: { tool: Tool }) {
   const [failed, setFailed] = useState(!tool.src);
   return (
-    <div className={styles.orbFace}>
+    <div className={`${styles.orbFace} ${molecule.face}`}>
       <i className={styles.orbSpecular} />
       {!failed && tool.src ? <img src={tool.src} alt="" aria-hidden="true" onError={() => setFailed(true)} /> : <b>{tool.short}</b>}
-      <span>{tool.name}</span><small>{tool.note}</small>
+      <span>{tool.name}</span><small>{tool.note}</small><em className={molecule.company}>{tool.company}</em>
     </div>
   );
 }
@@ -65,6 +67,7 @@ export default function HomeJourney() {
   const progressLine = useRef<HTMLElement>(null);
   const progressReadout = useRef<HTMLSpanElement>(null);
   const [step, setStep] = useState(0);
+  const [hoveredTool, setHoveredTool] = useState(-1);
 
   useEffect(() => {
     let raf = 0;
@@ -80,7 +83,7 @@ export default function HomeJourney() {
       el.style.setProperty("--journey", `${p}`);
       if (progressLine.current) progressLine.current.style.transform = `scaleX(${p})`;
       if (progressReadout.current) progressReadout.current.textContent = `${String(Math.round(p * 100)).padStart(3, "0")}%`;
-      if (nextStep !== currentStep) { currentStep = nextStep; setStep(nextStep); }
+      if (nextStep !== currentStep) { currentStep = nextStep; setHoveredTool(-1); setStep(nextStep); }
     };
     const requestUpdate = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(update); };
     update();
@@ -110,37 +113,27 @@ export default function HomeJourney() {
         <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /></div>
         <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
 
-        <div className={styles.topline}>
-          <span>BR / DIGITAL ATELIER</span>
-          <span>LIVE WORKFLOW / WEBGL</span>
-          <span ref={progressReadout}>000%</span>
-        </div>
+        <div className={styles.topline}><span>BR / DIGITAL ATELIER</span><span>LIVE WORKFLOW / WEBGL</span><span ref={progressReadout}>000%</span></div>
 
         <nav className={styles.rail} aria-label="Journey chapters">
-          {steps.map((label, index) => (
-            <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined}>
-              <i /><span>{String(index).padStart(2, "0")}</span><b>{label}</b>
-            </button>
-          ))}
+          {steps.map((label, index) => <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined}><i /><span>{String(index).padStart(2, "0")}</span><b>{label}</b></button>)}
         </nav>
 
         <div className={styles.copy} aria-live="polite">
           <div className={styles.copyRule}><i /><span>SECTION / {String(step).padStart(2, "0")}</span></div>
-          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>One practice.<br /><em>Many instruments.</em></h2><span>The model stays alive while the workflow changes around it. Scroll to move from architecture to image, code and data.</span></>}
+          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>One practice.<br /><em>Many instruments.</em></h2><span>The architectural world stays alive while each tool family changes the behaviour of the system around it.</span></>}
           {activeFamily && <><p>{familyMeta[activeFamily].index} / {familyMeta[activeFamily].eyebrow}</p><h2>{familyMeta[activeFamily].title}<br /><em>{familyMeta[activeFamily].emphasis}</em></h2><span>{familyMeta[activeFamily].body}</span></>}
           {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The guided sequence resolves into four rooms. Pick the part of the practice you want to explore.</span></>}
         </div>
 
-        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""}`} aria-hidden={!activeFamily}>
-          <div className={styles.toolHeader}>
-            <span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span>
-            <b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b>
-          </div>
-          <div className={styles.tools}>
+        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
+          <ToolMoleculeCanvas className={molecule.canvas} family={activeFamily} hovered={hoveredTool} />
+          <div className={`${styles.toolHeader} ${molecule.header}`}><span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span><b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b></div>
+          <div className={`${styles.tools} ${molecule.cluster}`}>
             {activeTools.map((tool, index) => {
-              const angle = -100 + (360 / Math.max(1, activeTools.length)) * index;
+              const angle = -90 + (360 / Math.max(1, activeTools.length)) * index;
               return (
-                <article key={tool.name} className={styles.tool} style={{ "--angle": `${angle}deg`, "--delay": `${index * -0.72}s` } as React.CSSProperties}>
+                <article key={tool.name} className={`${styles.tool} ${molecule.tool}`} style={{ "--angle": `${angle}deg`, "--delay": `${index * -0.72}s` } as React.CSSProperties} onPointerEnter={() => setHoveredTool(index)} onPointerLeave={() => setHoveredTool(-1)}>
                   <BrandOrb tool={tool} />
                 </article>
               );
@@ -148,19 +141,12 @@ export default function HomeJourney() {
           </div>
         </div>
 
-        <div className={styles.worldMeta} aria-hidden="true">
-          <span>A—A / LIVING WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small>
-        </div>
+        <div className={styles.worldMeta} aria-hidden="true"><span>A—A / LIVING WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small></div>
         <div className={styles.measure} aria-hidden="true"><i /><span>8.40 m</span><i /></div>
 
         <div id="portfolio-menu" className={styles.chapterMenu} aria-hidden={step !== 6}>
           <div className={styles.menuIntro}><span>SELECT A ROOM</span><b>04 CHAPTERS / ONE PRACTICE</b></div>
-          {chapters.map(([no, name, href, note, meta]) => (
-            <Link href={href} prefetch={false} key={href} tabIndex={step === 6 ? 0 : -1}>
-              <span>{no}</span><div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div><b>↗</b>
-              <i className={styles.menuOrganism}><em /><em /><em /></i>
-            </Link>
-          ))}
+          {chapters.map(([no, name, href, note, meta]) => <Link href={href} prefetch={false} key={href} tabIndex={step === 6 ? 0 : -1}><span>{no}</span><div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div><b>↗</b><i className={styles.menuOrganism}><em /><em /><em /></i></Link>)}
         </div>
 
         <div className={styles.hint}><i /><span>{step < 6 ? "SCROLL / THE WORLD RECONFIGURES" : "SELECT A CHAPTER"}</span></div>
