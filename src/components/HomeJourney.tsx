@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
+import ArchitecturalNotation from "./ArchitecturalNotation";
 import HomeLivingField from "./HomeLivingField";
 import HomeWorldCanvas from "./HomeWorldCanvas";
 import ToolMoleculeCanvas from "./ToolMoleculeCanvas";
@@ -37,34 +38,34 @@ const tools: Tool[] = [
 
 const toolLayouts: Record<Family, Layout[]> = {
   design: [
-    { x: 33, y: 36, size: 126, mx: 27, my: 33, ms: 92, rot: -7 },
-    { x: 59, y: 27, size: 98, mx: 67, my: 29, ms: 76, rot: 5 },
-    { x: 43, y: 63, size: 112, mx: 30, my: 69, ms: 84, rot: 3 },
-    { x: 70, y: 58, size: 88, mx: 70, my: 67, ms: 70, rot: -5 },
+    { x: 38, y: 36, size: 128, mx: 28, my: 34, ms: 92, rot: -8 },
+    { x: 58, y: 29, size: 96, mx: 68, my: 31, ms: 76, rot: 6 },
+    { x: 43, y: 62, size: 112, mx: 31, my: 69, ms: 84, rot: 4 },
+    { x: 65, y: 57, size: 86, mx: 70, my: 67, ms: 70, rot: -6 },
   ],
   visual: [
-    { x: 27, y: 43, size: 94, mx: 25, my: 35, ms: 72, rot: -4 },
-    { x: 43, y: 26, size: 128, mx: 67, my: 28, ms: 86, rot: 6 },
-    { x: 68, y: 34, size: 104, mx: 24, my: 67, ms: 80, rot: -6 },
-    { x: 36, y: 68, size: 116, mx: 69, my: 66, ms: 88, rot: 4 },
-    { x: 69, y: 67, size: 84, mx: 49, my: 51, ms: 68, rot: -2 },
+    { x: 31, y: 43, size: 92, mx: 25, my: 35, ms: 72, rot: -5 },
+    { x: 48, y: 27, size: 132, mx: 68, my: 29, ms: 88, rot: 7 },
+    { x: 67, y: 40, size: 104, mx: 24, my: 67, ms: 80, rot: -7 },
+    { x: 42, y: 68, size: 116, mx: 69, my: 67, ms: 88, rot: 5 },
+    { x: 65, y: 66, size: 82, mx: 50, my: 52, ms: 66, rot: -3 },
   ],
   creative: [
-    { x: 29, y: 36, size: 102, mx: 26, my: 34, ms: 76, rot: -9 },
-    { x: 49, y: 24, size: 122, mx: 67, my: 29, ms: 88, rot: 7 },
-    { x: 72, y: 43, size: 88, mx: 24, my: 68, ms: 70, rot: -3 },
-    { x: 37, y: 69, size: 112, mx: 69, my: 67, ms: 82, rot: 5 },
-    { x: 63, y: 67, size: 96, mx: 50, my: 51, ms: 72, rot: -7 },
+    { x: 33, y: 37, size: 102, mx: 27, my: 35, ms: 76, rot: -10 },
+    { x: 50, y: 25, size: 124, mx: 68, my: 30, ms: 88, rot: 8 },
+    { x: 69, y: 43, size: 86, mx: 24, my: 68, ms: 70, rot: -4 },
+    { x: 40, y: 68, size: 110, mx: 69, my: 67, ms: 82, rot: 5 },
+    { x: 62, y: 64, size: 96, mx: 50, my: 52, ms: 72, rot: -8 },
   ],
   code: [
-    { x: 34, y: 35, size: 124, mx: 27, my: 35, ms: 92, rot: -6 },
-    { x: 67, y: 39, size: 100, mx: 69, my: 35, ms: 78, rot: 5 },
-    { x: 51, y: 67, size: 136, mx: 49, my: 69, ms: 96, rot: 2 },
+    { x: 38, y: 36, size: 126, mx: 28, my: 35, ms: 92, rot: -7 },
+    { x: 64, y: 39, size: 98, mx: 69, my: 35, ms: 78, rot: 6 },
+    { x: 51, y: 65, size: 138, mx: 49, my: 69, ms: 96, rot: 3 },
   ],
   data: [
-    { x: 31, y: 48, size: 104, mx: 25, my: 37, ms: 82, rot: -4 },
-    { x: 52, y: 28, size: 126, mx: 70, my: 35, ms: 94, rot: 6 },
-    { x: 69, y: 64, size: 92, mx: 49, my: 69, ms: 74, rot: -5 },
+    { x: 35, y: 49, size: 102, mx: 26, my: 38, ms: 82, rot: -5 },
+    { x: 52, y: 29, size: 128, mx: 70, my: 35, ms: 94, rot: 7 },
+    { x: 66, y: 63, size: 92, mx: 49, my: 69, ms: 74, rot: -6 },
   ],
 };
 
@@ -143,11 +144,12 @@ export default function HomeJourney() {
       <div className={styles.sticky}>
         <HomeLivingField className={styles.livingField} />
         <HomeWorldCanvas className={styles.world} mode="journey" step={step} />
+        <ArchitecturalNotation variant="journey" />
         <div className={styles.vignette} aria-hidden="true" />
         <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /></div>
         <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
 
-        <div className={styles.topline}><span>BR / DIGITAL ATELIER</span><span>LIVE WORKFLOW / WEBGL</span><span ref={progressReadout}>000%</span></div>
+        <div className={styles.topline}><span>BR / DIGITAL ATELIER</span><span>ARCHITECTURAL WORKFLOW / WEBGL</span><span ref={progressReadout}>000%</span></div>
 
         <nav className={styles.rail} aria-label="Journey chapters">
           {steps.map((label, index) => <button type="button" key={label} onClick={() => goToStep(index)} className={step === index ? styles.railActive : undefined}><i /><span>{String(index).padStart(2, "0")}</span><b>{label}</b></button>)}
@@ -155,9 +157,9 @@ export default function HomeJourney() {
 
         <div className={styles.copy} aria-live="polite">
           <div className={styles.copyRule}><i /><span>SECTION / {String(step).padStart(2, "0")}</span></div>
-          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>Structure.<br /><em>Organism.</em></h2><span>A single architectural world carries the whole journey: beams, sections, geometry and living systems change as the practice moves from drawing to computation.</span></>}
+          {step === 0 && <><p>00 / THE DIGITAL ATELIER</p><h2>Structure.<br /><em>Then life.</em></h2><span>The same architectural field carries the whole journey. Beams, sections, drawing geometry and tools reorganise as the practice moves from line to space, image, code and data.</span></>}
           {activeFamily && <><p>{familyMeta[activeFamily].index} / {familyMeta[activeFamily].eyebrow}</p><h2>{familyMeta[activeFamily].title}<br /><em>{familyMeta[activeFamily].emphasis}</em></h2><span>{familyMeta[activeFamily].body}</span></>}
-          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The world opens into four rooms. Pick the part of the practice you want to explore.</span></>}
+          {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The structural field clears and becomes four rooms. Choose the part of the practice you want to inspect.</span></>}
         </div>
 
         <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
@@ -181,7 +183,7 @@ export default function HomeJourney() {
           </div>
         </div>
 
-        <div className={styles.worldMeta} aria-hidden="true"><span>A—A / LIVING WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small></div>
+        <div className={styles.worldMeta} aria-hidden="true"><span>A—A / STRUCTURAL WORKFLOW</span><b>±0.00</b><small>REALTIME MODEL / SCROLL LINKED</small></div>
         <div className={styles.measure} aria-hidden="true"><i /><span>8.40 m</span><i /></div>
 
         <div id="portfolio-menu" className={styles.chapterMenu} aria-hidden={step !== 6}>
@@ -189,7 +191,7 @@ export default function HomeJourney() {
           {chapters.map(([no, name, href, note, meta]) => <Link href={href} prefetch={false} key={href} tabIndex={step === 6 ? 0 : -1}><span>{no}</span><div><small>{meta}</small><strong>{name}</strong><p>{note}</p></div><b>↗</b><i className={styles.menuOrganism}><em /><em /><em /></i></Link>)}
         </div>
 
-        <div className={styles.hint}><i /><span>{step < 6 ? "SCROLL / THE WORLD RECONFIGURES" : "SELECT A CHAPTER"}</span></div>
+        <div className={styles.hint}><i /><span>{step < 6 ? "SCROLL / THE STRUCTURE RECONFIGURES" : "SELECT A CHAPTER"}</span></div>
         <div className={styles.progress}><i ref={progressLine} /></div>
         <div className={styles.bottomline}>{steps.slice(1).map((label) => <span key={label}>{label}</span>)}</div>
       </div>
