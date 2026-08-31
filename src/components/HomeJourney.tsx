@@ -146,8 +146,8 @@ export default function HomeJourney() {
         <HomeLivingField className={`${styles.livingField} ${architectural.living}`} />
         <HomeWorldCanvas className={`${styles.world} ${architectural.world}`} mode="journey" step={step} />
         <ArchitecturalNotation variant="journey" />
-        <div className={styles.vignette} aria-hidden="true" />
-        <div className={styles.planGrid} aria-hidden="true"><span /><span /><span /><span /></div>
+        <div className={`${styles.vignette} ${architectural.vignette}`} aria-hidden="true" />
+        <div className={`${styles.planGrid} ${architectural.plan}`} aria-hidden="true"><span /><span /><span /><span /></div>
         <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
 
         <div className={styles.topline}><span>BR / DIGITAL ATELIER</span><span>ARCHITECTURAL WORKFLOW / WEBGL</span><span ref={progressReadout}>000%</span></div>
