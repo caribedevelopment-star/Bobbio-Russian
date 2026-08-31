@@ -8,7 +8,15 @@ import styles from "./ImmersiveHomeHero.module.css";
 import atmosphere from "./ImmersiveHomeAtmosphere.module.css";
 import brand from "./ImmersiveHomeBrand.module.css";
 
-const brands = ["BONTEMPI CASA", "FEBAL CASA", "COLOMBINI GROUP", "GRUPO TJC"];
+const brands = [
+  "FEBAL CASA",
+  "GRUPPO COLOMBINI",
+  "GRUPO TJC",
+  "IKONO",
+  "URBAN PONICS",
+  "BONTEMPI",
+  "SOLA",
+];
 
 export default function ImmersiveHomeHero() {
   const root = useRef<HTMLElement>(null);
@@ -43,6 +51,7 @@ export default function ImmersiveHomeHero() {
         <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
 
         <div className={brand.band} aria-label="Selected professional context">
+          <div className={brand.label}><span>SELECTED CONTEXT</span><b>07 / PRACTICE + INDUSTRY</b></div>
           <div className={brand.track}>
             {[...brands, ...brands, ...brands].map((brandName, index) => <span key={`${brandName}-${index}`}><i />{brandName}</span>)}
           </div>
