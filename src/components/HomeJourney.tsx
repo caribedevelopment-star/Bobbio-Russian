@@ -9,6 +9,7 @@ import ToolMoleculeCanvas from "./ToolMoleculeCanvas";
 import styles from "./HomeJourney.module.css";
 import architectural from "./HomeJourneyArchitectural.module.css";
 import molecule from "./ToolMolecules.module.css";
+import polish from "./HomeJourneyPolish.module.css";
 
 type Family = "design" | "visual" | "creative" | "code" | "data";
 type Tool = { name: string; short: string; note: string; family: Family; company: string; src?: string };
@@ -141,14 +142,16 @@ export default function HomeJourney() {
   const layouts = activeFamily ? toolLayouts[activeFamily] : [];
 
   return (
-    <section id="home-journey" ref={root} className={`${styles.journey} ${architectural.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
-      <div className={`${styles.sticky} ${architectural.stage}`}>
+    <section id="home-journey" ref={root} data-step={step} className={`${styles.journey} ${architectural.journey} ${polish.journey} ${styles[`step${step}`]}`} aria-label="Bobbio Russian digital atelier journey">
+      <div className={`${styles.sticky} ${architectural.stage} ${polish.stage}`}>
         <HomeLivingField className={`${styles.livingField} ${architectural.living}`} />
         <HomeWorldCanvas className={`${styles.world} ${architectural.world}`} mode="journey" step={step} />
         <ArchitecturalNotation variant="journey" />
         <div className={`${styles.vignette} ${architectural.vignette}`} aria-hidden="true" />
         <div className={`${styles.planGrid} ${architectural.plan}`} aria-hidden="true"><span /><span /><span /><span /></div>
         <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
+
+        <div className={polish.bridge} aria-hidden="true"><span>BOBBIO RUSSIAN</span><i /><b>DIGITAL ATELIER / 05 SYSTEMS</b></div>
 
         <div className={styles.topline}><span>BR / DIGITAL ATELIER</span><span>ARCHITECTURAL WORKFLOW / WEBGL</span><span ref={progressReadout}>000%</span></div>
 
@@ -163,7 +166,7 @@ export default function HomeJourney() {
           {step === 6 && <><p>06 / PORTFOLIO PLAN</p><h2>Choose<br /><em>where to enter.</em></h2><span>The structural field clears and becomes four rooms. Choose the part of the practice you want to inspect.</span></>}
         </div>
 
-        <div className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${architectural.tools} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
+        <div data-family={activeFamily ?? "none"} className={`${styles.toolLayer} ${activeFamily ? styles.toolLayerActive : ""} ${molecule.shell} ${architectural.tools} ${polish.toolShell} ${activeFamily ? `${molecule.active} ${molecule[activeFamily]}` : ""}`} aria-hidden={!activeFamily}>
           <ToolMoleculeCanvas className={molecule.canvas} family={activeFamily} hovered={hoveredTool} />
           <div className={`${styles.toolHeader} ${molecule.header}`}><span>{activeFamily ? familyMeta[activeFamily].eyebrow : "DIGITAL TOOLCHAIN"}</span><b>{String(activeTools.length).padStart(2, "0")} INSTRUMENTS</b></div>
           <div className={`${styles.tools} ${molecule.cluster}`}>
