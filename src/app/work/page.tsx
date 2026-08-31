@@ -3,6 +3,7 @@ import Link from "next/link";
 import LazyEmbed from "../../components/LazyEmbed";
 import Lexicon from "../../components/Lexicon";
 import UrbanSystemFlow from "../../components/UrbanSystemFlow";
+import UrbanFilmStage from "../../components/UrbanFilmStage";
 import styles from "./work.module.css";
 import refine from "./work-refinement.module.css";
 
@@ -10,7 +11,6 @@ export const metadata: Metadata = { title: "Cultivated Matter", description: "Ur
 
 const TOWER = "https://sketchfab.com/models/1accfef6146640308048131fe7f0ca1d/embed?ui_theme=dark&ui_infos=0&ui_controls=1&autostart=1&preload=1&ui_hint=0";
 const NFT = "https://sketchfab.com/models/d8f12e0f476247adb94ecf52a1573637/embed?ui_theme=dark&ui_infos=0&ui_controls=1&autostart=1&preload=1&ui_hint=0";
-const FILM = "https://player.vimeo.com/video/1211006561?badge=0&autopause=0&background=1&autoplay=1&muted=1&loop=1";
 const thumb = (id: string, width = 1800) => `https://drive.google.com/thumbnail?id=${id}&sz=w${width}`;
 
 const visualFrames = [
@@ -26,21 +26,11 @@ export default function WorkPage() {
       <header className={`${styles.header} ${refine.header}`}>
         <p className="eyebrow" data-reveal>02 / <Lexicon term="matter" /></p>
         <h1 data-reveal><Lexicon term="matter" /><br /><em>Urban Ponics.</em></h1>
-        <p data-reveal>A bio-design project read through atmosphere, living systems, project imagery and interactive objects. The page moves from feeling the project to understanding how it works.</p>
+        <p data-reveal>A bio-design project understood first as a bioclimatic system, then as atmosphere, image and interactive object. The technical logic becomes the entrance to the experience.</p>
       </header>
 
-      <section className={`${styles.filmSection} ${refine.film}`}>
-        <div className={styles.sectionLead} data-reveal>
-          <div><span>01</span><p>FILM / ATMOSPHERE</p></div>
-          <h2>The project<br /><em>before explanation.</em></h2>
-          <p>Movement, sound and rhythm establish the emotional territory first. The film is the entrance — not the documentation.</p>
-        </div>
-        <div className={`${styles.filmFrame} ${refine.filmFrame}`} data-reveal>
-          <div className={styles.filmCoordinates}><span>URBAN PONICS</span><span>MOVING IMAGE · 16:9</span></div>
-          <LazyEmbed title="Urban Ponics film" src={FILM} kind="film" status="Film · atmosphere" allow="autoplay; fullscreen; picture-in-picture; encrypted-media" />
-        </div>
-        <UrbanSystemFlow />
-      </section>
+      <UrbanSystemFlow />
+      <UrbanFilmStage />
 
       <section className={`${styles.narrative} ${refine.narrative}`}>
         <div className={styles.narrativeIndex} data-reveal><span>03</span><i /><b>THE IDEA / SYSTEM</b></div>
