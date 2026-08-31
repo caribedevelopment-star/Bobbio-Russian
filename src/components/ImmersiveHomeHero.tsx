@@ -7,6 +7,7 @@ import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./ImmersiveHomeHero.module.css";
 import atmosphere from "./ImmersiveHomeAtmosphere.module.css";
 import brand from "./ImmersiveHomeBrand.module.css";
+import responsive from "./ImmersiveHomeResponsive.module.css";
 
 const brands = [
   "FEBAL CASA",
@@ -32,7 +33,7 @@ export default function ImmersiveHomeHero() {
   };
 
   return (
-    <section id="home-top" ref={root} onPointerMove={onPointerMove} className={`${styles.hero} ${atmosphere.hero}`} aria-label="Bobbio Russian architectural portfolio introduction">
+    <section id="home-top" ref={root} onPointerMove={onPointerMove} className={`${styles.hero} ${atmosphere.hero} ${responsive.hero}`} aria-label="Bobbio Russian architectural portfolio introduction">
       <HomeLivingField className={`${styles.field} ${atmosphere.field}`} />
       <HomeWorldCanvas className={`${styles.world} ${atmosphere.world}`} mode="hero" />
       <ArchitecturalNotation variant="hero" />
@@ -46,7 +47,7 @@ export default function ImmersiveHomeHero() {
         <span>PORTFOLIO / 2026</span>
       </div>
 
-      <div className={styles.copy}>
+      <div className={`${styles.copy} ${responsive.copy}`}>
         <p className={styles.kicker}>FROM DRAWING TO EXPERIENCE.</p>
         <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
 
@@ -57,16 +58,16 @@ export default function ImmersiveHomeHero() {
           </div>
         </div>
 
-        <div className={styles.introRow}>
+        <div className={`${styles.introRow} ${responsive.intro}`}>
           <p>Architecture, luxury interiors and living systems developed through structure, drawing, modelling, material, light, computation and immersive space.</p>
-          <div className={styles.actions}>
+          <div className={`${styles.actions} ${responsive.actions}`}>
             <a href="#home-journey"><span>ENTER EXPERIENCE</span><b>↓</b></a>
             <a href="#portfolio-menu"><span>CHOOSE A SECTION</span><b>↗</b></a>
           </div>
         </div>
       </div>
 
-      <div className={styles.worldMeta} aria-hidden="true">
+      <div className={`${styles.worldMeta} ${responsive.worldMeta}`} aria-hidden="true">
         <span>LIVE ARCHITECTURAL FIELD</span>
         <b>A—A / 1:50</b>
         <small>STRUCTURE / SECTION / REALTIME</small>
@@ -76,13 +77,13 @@ export default function ImmersiveHomeHero() {
       <div className={styles.areaTag} aria-hidden="true">AREA / 128.4 m²</div>
       <div className={styles.datum} aria-hidden="true">±0.00 / DATUM</div>
 
-      <div className={styles.disciplines}>
+      <div className={`${styles.disciplines} ${responsive.disciplines}`}>
         <span><i />01 / ARCHITECTURE</span>
         <span><i />02 / BIO-DESIGN</span>
         <span><i />03 / CREATIVE DIRECTION</span>
       </div>
 
-      <div className={styles.bottomline}>
+      <div className={`${styles.bottomline} ${responsive.bottom}`}>
         <span>VENEZUELAN · ITALIAN · MADRID-BASED</span>
         <span>DRAW → STRUCTURE → MODEL → LIGHT → EXPERIENCE</span>
       </div>
