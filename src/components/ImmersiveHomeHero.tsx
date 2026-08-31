@@ -4,6 +4,7 @@ import { useRef } from "react";
 import HomeLivingField from "./HomeLivingField";
 import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./ImmersiveHomeHero.module.css";
+import atmosphere from "./ImmersiveHomeAtmosphere.module.css";
 
 export default function ImmersiveHomeHero() {
   const root = useRef<HTMLElement>(null);
@@ -19,9 +20,9 @@ export default function ImmersiveHomeHero() {
   };
 
   return (
-    <section id="home-top" ref={root} onPointerMove={onPointerMove} className={styles.hero} aria-label="Bobbio Russian architectural portfolio introduction">
-      <HomeLivingField className={styles.field} />
-      <HomeWorldCanvas className={styles.world} mode="hero" />
+    <section id="home-top" ref={root} onPointerMove={onPointerMove} className={`${styles.hero} ${atmosphere.hero}`} aria-label="Bobbio Russian architectural portfolio introduction">
+      <HomeLivingField className={`${styles.field} ${atmosphere.field}`} />
+      <HomeWorldCanvas className={`${styles.world} ${atmosphere.world}`} mode="hero" />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.plan} aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
       <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
