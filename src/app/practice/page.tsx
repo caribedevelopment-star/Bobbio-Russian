@@ -1,13 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import RoleSystem from "../../components/RoleSystem";
-import LazyEmbed from "../../components/LazyEmbed";
+import PanoramaSet from "../../components/PanoramaSet";
 import Lexicon from "../../components/Lexicon";
 import styles from "./practice.module.css";
 
 export const metadata: Metadata = { title: "Atelier", description: "Architectural and luxury design, bio-design and creative project leadership." };
-
-const PANO = "https://twinmotion.unrealengine.com/panorama/RNq6WfMy27Nonz23?lang=es-ES&c=7A9F8E224CB4A881FF5423932245ECBC";
 
 const roles = [
   ["01", "SPACE / MATERIAL / DETAIL", "Architectural + Luxury Design", "I design space from the inside out: proportion, circulation, furniture, light, kitchens and material decisions resolved as one architectural language."],
@@ -54,24 +52,11 @@ export default function PracticePage() {
 
         <div className={styles.panoramaIntro} data-reveal>
           <div><span>PANORAMA SET / 01</span><i /></div>
-          <h3>Enter the space.<br /><em>Not the image.</em></h3>
-          <p>A still frame fixes one point of view. The panorama removes that decision and lets the body read scale, thresholds and adjacency directly. Drag on desktop; swipe or use device orientation where supported.</p>
+          <h3>The drawing opens<br /><em>into the room.</em></h3>
+          <p>At this point the page stops behaving like a portfolio and becomes the space itself. The next viewport is dedicated entirely to inspection, orientation and movement.</p>
         </div>
 
-        <div className={styles.panoramaFrame} data-reveal>
-          <div className={styles.panoramaTop}><span>SET 01 / IMMERSIVE ROOM</span><b>360º / TWINMOTION</b><i>DRAG / SWIPE TO LOOK ↔</i></div>
-          <div className={styles.panoramaStage}>
-            <LazyEmbed title="Architectural Twinmotion panorama" src={PANO} kind="panorama" status="Architectural environment · 360º" allow="fullscreen; accelerometer; gyroscope" />
-            <div className={styles.panoramaPlan} aria-hidden="true">
-              <span className={styles.pNorth}>N</span><span className={styles.pEast}>E</span><span className={styles.pSouth}>S</span><span className={styles.pWest}>W</span>
-              <i /><i /><i /><i />
-              <b>CAM / 01</b>
-            </div>
-            <div className={styles.panoramaSection} aria-hidden="true"><span>A</span><i /><b>SECTION / VIEW FIELD</b><i /><span>A</span></div>
-            <div className={styles.panoramaLevels} aria-hidden="true"><span>+2.700 / CLG</span><span>±0.000 / FFL</span></div>
-          </div>
-          <div className={styles.panoramaFooter}><span>LOOK / TURN / INSPECT</span><b>CAMERA HEIGHT / 1.60 m</b><span>FULLSCREEN AVAILABLE ↗</span></div>
-        </div>
+        <PanoramaSet />
       </section>
 
       <section className={styles.next} data-reveal><span>NEXT / 02</span><h2>Ideas become convincing<br /><em>when they begin to move.</em></h2><Link prefetch={false} href="/work">Enter the next chapter ↗</Link></section>
