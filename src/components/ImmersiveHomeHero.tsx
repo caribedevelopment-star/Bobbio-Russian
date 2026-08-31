@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef } from "react";
+import ArchitecturalNotation from "./ArchitecturalNotation";
 import HomeLivingField from "./HomeLivingField";
 import HomeWorldCanvas from "./HomeWorldCanvas";
 import styles from "./ImmersiveHomeHero.module.css";
@@ -23,6 +24,7 @@ export default function ImmersiveHomeHero() {
     <section id="home-top" ref={root} onPointerMove={onPointerMove} className={`${styles.hero} ${atmosphere.hero}`} aria-label="Bobbio Russian architectural portfolio introduction">
       <HomeLivingField className={`${styles.field} ${atmosphere.field}`} />
       <HomeWorldCanvas className={`${styles.world} ${atmosphere.world}`} mode="hero" />
+      <ArchitecturalNotation variant="hero" />
       <div className={styles.vignette} aria-hidden="true" />
       <div className={styles.plan} aria-hidden="true"><i /><i /><i /><i /><i /><i /></div>
       <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
@@ -34,10 +36,10 @@ export default function ImmersiveHomeHero() {
       </div>
 
       <div className={styles.copy}>
-        <p className={styles.kicker}>FROM BIT TO MATTER.</p>
+        <p className={styles.kicker}>FROM DRAWING TO EXPERIENCE.</p>
         <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
         <div className={styles.introRow}>
-          <p>Architecture, luxury interiors and living systems shaped through drawing, modelling, material, light, computation and immersive space.</p>
+          <p>Architecture, luxury interiors and living systems developed through structure, drawing, modelling, material, light, computation and immersive space.</p>
           <div className={styles.actions}>
             <a href="#home-journey"><span>ENTER EXPERIENCE</span><b>↓</b></a>
             <a href="#portfolio-menu"><span>CHOOSE A SECTION</span><b>↗</b></a>
@@ -46,9 +48,9 @@ export default function ImmersiveHomeHero() {
       </div>
 
       <div className={styles.worldMeta} aria-hidden="true">
-        <span>LIVE SPATIAL MODEL</span>
+        <span>LIVE ARCHITECTURAL FIELD</span>
         <b>A—A / 1:50</b>
-        <small>POINTER / PARALLAX / REALTIME</small>
+        <small>STRUCTURE / SECTION / REALTIME</small>
       </div>
       <div className={styles.measureX} aria-hidden="true"><i /><span>12.80 m</span><i /></div>
       <div className={styles.measureY} aria-hidden="true"><i /><span>7.40 m</span><i /></div>
@@ -63,7 +65,7 @@ export default function ImmersiveHomeHero() {
 
       <div className={styles.bottomline}>
         <span>VENEZUELAN · ITALIAN · MADRID-BASED</span>
-        <span>DRAW → MODEL → LIGHT → BUILD → EXPERIENCE</span>
+        <span>DRAW → STRUCTURE → MODEL → LIGHT → EXPERIENCE</span>
       </div>
     </section>
   );
