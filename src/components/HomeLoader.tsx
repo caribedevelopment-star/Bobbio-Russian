@@ -1,10 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import HomeLivingField from "./HomeLivingField";
 import styles from "./HomeLoader.module.css";
 
-const phases = ["DRAW", "MODEL", "MATERIAL", "LIGHT", "EXPERIENCE"] as const;
+const phases = ["DRAW", "STRUCTURE", "MODEL", "LIGHT", "EXPERIENCE"] as const;
 const preloadMarks = [
   "https://cdn.simpleicons.org/autodesk/FFFFFF",
   "https://cdn.simpleicons.org/sketchup/FFFFFF",
@@ -27,7 +26,7 @@ export default function HomeLoader() {
     if (leaving) return;
     setLeaving(true);
     sessionStorage.setItem("br-home-loaded", "1");
-    window.setTimeout(() => setVisible(false), 720);
+    window.setTimeout(() => setVisible(false), 900);
   };
 
   useEffect(() => {
@@ -40,8 +39,8 @@ export default function HomeLoader() {
     let raf = 0;
     let completed = 0;
     const total = 3;
-
     const mark = () => { completed += 1; };
+
     (document.fonts?.ready ?? Promise.resolve()).then(mark);
     new Promise<void>((resolve) => {
       if (document.readyState === "complete") resolve();
@@ -57,15 +56,14 @@ export default function HomeLoader() {
     const tick = (now: number) => {
       const elapsed = now - started;
       const actual = completed / total;
-      const temporal = Math.min(0.94, elapsed / 1450);
-      const blended = Math.min(0.98, Math.max(temporal * 0.62, actual * 0.92));
-      const finished = completed >= total && elapsed > 900;
+      const temporal = Math.min(0.94, elapsed / 1650);
+      const blended = Math.min(0.985, Math.max(temporal * 0.64, actual * 0.93));
+      const finished = completed >= total && elapsed > 980;
       const value = finished ? 100 : Math.round(blended * 100);
       setProgress(value);
-
       if (finished) {
         setReady(true);
-        window.setTimeout(leave, 820);
+        window.setTimeout(leave, 900);
         return;
       }
       raf = requestAnimationFrame(tick);
@@ -76,38 +74,44 @@ export default function HomeLoader() {
   }, []);
 
   if (!visible) return null;
-
   const phaseIndex = Math.min(phases.length - 1, Math.floor(progress / 20));
 
   const onPointerMove = (event: React.PointerEvent<HTMLDivElement>) => {
     const el = root.current;
     if (!el) return;
     const rect = el.getBoundingClientRect();
-    const x = ((event.clientX - rect.left) / Math.max(1, rect.width) - 0.5) * 18;
-    const y = ((event.clientY - rect.top) / Math.max(1, rect.height) - 0.5) * 14;
-    el.style.setProperty("--lx", `${x}px`);
-    el.style.setProperty("--ly", `${y}px`);
+    const x = (event.clientX - rect.left) / Math.max(1, rect.width) - 0.5;
+    const y = (event.clientY - rect.top) / Math.max(1, rect.height) - 0.5;
+    el.style.setProperty("--lx", `${x}`);
+    el.style.setProperty("--ly", `${y}`);
   };
 
   return (
     <div ref={root} onPointerMove={onPointerMove} className={`${styles.loader} ${leaving ? styles.exit : ""}`} aria-label={`Preparing portfolio ${progress}%`}>
-      <HomeLivingField className={styles.field} />
-      <div className={styles.coordinates}><span>BR / SPATIAL ARCHIVE</span><span>MADRID · 40.4168° N</span><span>HOME / 2026</span></div>
       <div className={styles.frame} aria-hidden="true"><i /><i /><i /><i /></div>
-      <div className={styles.core} aria-hidden="true">
-        <i className={styles.ringA} /><i className={styles.ringB} /><i className={styles.ringC} />
-        <span className={styles.axisX} /><span className={styles.axisY} />
-        <span className={styles.slabA} /><span className={styles.slabB} /><span className={styles.slabC} />
-        <b>BR</b>
+      <div className={styles.coordinates}><span>BR / ARCHITECTURAL FIELD</span><span>MADRID · 40.4168° N</span><span>PORTFOLIO / 2026</span></div>
+
+      <div className={styles.structure} aria-hidden="true">
+        <div className={styles.axisA} /><div className={styles.axisB} /><div className={styles.axisC} />
+        <div className={styles.beamA} /><div className={styles.beamB} /><div className={styles.beamC} /><div className={styles.beamD} />
+        <div className={styles.columnA} /><div className={styles.columnB} /><div className={styles.columnC} />
+        <div className={styles.braceA} /><div className={styles.braceB} />
+        <div className={styles.triangle}><i /><i /><i /><span>3² + 4² = 5²</span></div>
+        <div className={styles.dimension}><i /><b>8 600</b><i /></div>
+        <div className={styles.levels}><span>+3.600</span><span>+2.350</span><span>±0.000</span></div>
       </div>
-      <div className={styles.copy}>
-        <div className={styles.status}><span>PREPARING THE DIGITAL ATELIER</span><i>{ready ? "READY" : "LOADING"}</i></div>
-        <h2>{phases[phaseIndex]}</h2>
+
+      <div className={styles.nameBlock}>
+        <span className={styles.pre}>ARCHITECTURE / BIO-DESIGN / CREATIVE DIRECTION</span>
+        <h1><span>BOBBIO</span><span>RUSSIAN</span></h1>
+        <div className={styles.status}><span>{phases[phaseIndex]} / {String(progress).padStart(3, "0")}%</span><i>{ready ? "FIELD READY" : "CONSTRUCTING"}</i></div>
         <div className={styles.track}><i style={{ width: `${progress}%` }} /></div>
-        <div className={styles.readout}><span>{String(progress).padStart(3, "0")}%</span><span>{phases.map((phase, index) => <b className={index === phaseIndex ? styles.activePhase : undefined} key={phase}>{phase}</b>)}</span></div>
-        {ready && <button type="button" onClick={leave}>ENTER THE ATELIER <b>↗</b></button>}
+        <div className={styles.readout}>{phases.map((phase, index) => <b className={index === phaseIndex ? styles.activePhase : undefined} key={phase}>{phase}</b>)}</div>
+        {ready && <button type="button" onClick={leave}>ENTER THE FIELD <b>↗</b></button>}
       </div>
-      <div className={styles.cornerA}>X / DRAWING PLANE</div><div className={styles.cornerB}>Y / EXPERIENCE FIELD</div>
+
+      <div className={styles.surfaceTag}>SURFACE / 128.40 m²</div>
+      <div className={styles.sectionTag}>SECTION A—A / 1:50</div>
     </div>
   );
 }
