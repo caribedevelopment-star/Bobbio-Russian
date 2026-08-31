@@ -2,6 +2,8 @@ import Link from "next/link";
 import Lexicon, { type LexiconTerm } from "../components/Lexicon";
 import SpatialCore from "../components/SpatialCore";
 import ArchitecturalOverlay from "../components/ArchitecturalOverlay";
+import HomeLoader from "../components/HomeLoader";
+import HomeJourney from "../components/HomeJourney";
 import styles from "./home.module.css";
 import enhanced from "./landing-enhancements.module.css";
 
@@ -62,6 +64,7 @@ const brands = ["BONTEMPI CASA", "FEBAL CASA", "COLOMBINI GROUP", "GRUPO TJC"];
 export default function Home() {
   return (
     <main className="pageEnter">
+      <HomeLoader />
       <section className={styles.hero}>
         <div className={styles.cinemaFrame} aria-hidden="true"><i /><i /><i /><i /></div>
         <div className={styles.scan} aria-hidden="true" />
@@ -77,7 +80,7 @@ export default function Home() {
           <p className={styles.kicker} data-reveal>From bit to matter.</p>
           <h1 aria-label="Bobbio Russian"><span>BOBBIO</span><span>RUSSIAN</span></h1>
           <div className={styles.heroGrid} aria-hidden="true"><span /><span /><span /><span /></div>
-          <p className={styles.statement} data-reveal>Architectural design, interiors and living systems — developed through drawing, modelling, material, light and immersive digital space. Start with the four chapters below.</p>
+          <p className={styles.statement} data-reveal>Architecture, interiors and living systems developed through drawing, modelling, light, computation and immersive space. Scroll to enter the digital atelier.</p>
         </div>
 
         <div className={enhanced.designSequence} data-reveal>
@@ -88,22 +91,13 @@ export default function Home() {
           <span>05 EXPERIENCE</span>
         </div>
 
-        <div className={styles.chapterMap} data-reveal>
-          <div className={styles.chapterMapIntro}><span>PORTFOLIO PLAN</span><b>CHOOSE A ROOM</b></div>
-          {portals.map(portal => (
-            <Link prefetch={false} href={portal.href} key={`map-${portal.href}`} className={styles.chapterMapItem}>
-              <span>{portal.no}</span>
-              <strong><Lexicon term={portal.term} /></strong>
-              <small>{portal.cue}</small>
-            </Link>
-          ))}
-        </div>
-
         <div className={styles.heroBottom} data-reveal>
           <span>Venezuelan · Italian · Madrid-based</span>
-          <span>Scroll ↓ / Choose a chapter</span>
+          <span>Scroll ↓ / Enter the atelier</span>
         </div>
       </section>
+
+      <HomeJourney />
 
       <section className={styles.prologue}>
         <div className={styles.prologueIndex} data-reveal><span>00</span><i /></div>
