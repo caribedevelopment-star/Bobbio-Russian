@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";\nimport { CinematicGallery, CinematicHero } from "./cinematic-opening";
+import { useEffect, useRef, useState } from "react";
+import { CinematicGallery, CinematicHero } from "./cinematic-opening";
 
 const SKETCHFAB_TOWER = "https://sketchfab.com/models/1accfef6146640308048131fe7f0ca1d/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
 const SKETCHFAB_NFT = "https://sketchfab.com/models/d8f12e0f476247adb94ecf52a1573637/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
