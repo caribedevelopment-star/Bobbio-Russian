@@ -1,11 +1,44 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";\nimport { CinematicGallery, CinematicHero } from "./cinematic-opening";
 
 const SKETCHFAB_TOWER = "https://sketchfab.com/models/1accfef6146640308048131fe7f0ca1d/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
 const SKETCHFAB_NFT = "https://sketchfab.com/models/d8f12e0f476247adb94ecf52a1573637/embed?ui_theme=dark&ui_infos=0&ui_controls=1&ui_stop=0&autostart=1&preload=1&ui_hint=0";
 const VIMEO = "https://player.vimeo.com/video/1211006561?badge=0&autopause=0&background=1&autoplay=1&muted=1&loop=1";
 const TWINMOTION = "https://twinmotion.unrealengine.com/panorama/RNq6WfMy27Nonz23?lang=es-ES&c=7A9F8E224CB4A881FF5423932245ECBC";
+
+function DeferredEmbed({
+  title,
+  src,
+  allow,
+  label,
+}: {
+  title: string;
+  src: string;
+  allow: string;
+  label: string;
+}) {
+  const [active, setActive] = useState(false);
+
+  if (active) {
+    return (
+      <iframe
+        title={title}
+        src={src}
+        allow={allow}
+        allowFullScreen
+        loading="lazy"
+      />
+    );
+  }
+
+  return (
+    <button type="button" className="embedGate" onClick={() => setActive(true)}>
+      <span>{label}</span>
+      <small>Loaded only on interaction</small>
+    </button>
+  );
+}
 
 type Marker = { lat: number; lon: number; label: string; kind: "origin" | "identity" | "base" | "travel" };
 const markers: Marker[] = [
@@ -170,11 +203,7 @@ export default function Home() {
       <div className="scrollProgress" aria-hidden="true" /><div className="cursorGlow" aria-hidden="true" />
       <nav className="nav"><a href="#top" className="monogram">BR</a><div className="navLinks"><a href="#practice">Practice</a><a href="#work">Work</a><a href="#profile">Profile</a><a href="#education">Education</a></div><a href="#contact" className="navCta">Contact ↗</a></nav>
 
-      <section id="top" className="hero sectionFx">
-        <div className="heroTop" data-reveal><span>Architectural + Luxury Designer</span><span>Madrid · 2026</span></div>
-        <div className="heroStage"><p className="heroKicker" data-reveal>From bit to matter.</p><h1 aria-label="Bobbio Russian"><span className="heroWord heroWordA">BOBBIO</span><span className="heroWord heroWordB">RUSSIAN</span></h1><div className="heroOrb"><span /></div><p className="heroStatement" data-reveal>Architectural and luxury design, bio-design and creative project leadership — connected by technology, material intelligence and atmosphere.</p></div>
-        <div className="heroBottom" data-reveal><a href="#practice">Scroll to discover ↓</a><span>Venezuelan · Italian · Madrid-based</span></div>
-      </section>
+      <CinematicHero />
       <div className="ticker"><div>ARCHITECTURAL + LUXURY DESIGN — BIO-DESIGN — CREATIVE PROJECT LEAD — DIGITAL CRAFT — IMMERSIVE VISUALISATION — ARCHITECTURAL + LUXURY DESIGN — BIO-DESIGN — CREATIVE PROJECT LEAD —</div></div>
 
       <section id="practice" className="practice sectionPad sectionFx">
@@ -187,16 +216,15 @@ export default function Home() {
 
       <SectionBridge no="02" next="Selected Work" caption="From practice to proof" />
 
-      <section id="work" className="work sectionPad sectionFx">
-        <div className="workHeader" data-reveal><p className="sectionIndex">02 / SELECTED WORK</p><h2>Projects are not thumbnails.<br /><span>They are worlds.</span></h2></div>
+      <CinematicGallery />\n\n      <section id="urban-detail" className="work workDetail sectionPad sectionFx">
         <article className="urbanCase">
           <div className="urbanTitle" data-reveal><div><p className="micro accentText">FEATURED CASE STUDY · BIO-DESIGN</p><h3>URBAN<br />PONICS</h3></div><p>A living-system project told as a continuous sequence: film, object, system and space. The media is loaded into the narrative instead of sitting outside it.</p></div>
-          <div className="chapter" data-reveal><div className="chapterMeta"><span>ACT I</span><span>THE FILM</span><span>01 / 04</span></div><div className="mediaShell mediaShellHero"><div className="media mediaFilm"><iframe title="Urban Ponics film" src={VIMEO} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen /></div><span className="mediaStatus">LIVE FILM · AUTOPLAY</span></div></div>
+          <div className="chapter" data-reveal><div className="chapterMeta"><span>ACT I</span><span>THE FILM</span><span>01 / 04</span></div><div className="mediaShell mediaShellHero"><div className="media mediaFilm"><iframe title="Urban Ponics film" src={VIMEO} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen loading="lazy" /></div><span className="mediaStatus">LIVE FILM · AUTOPLAY</span></div></div>
           <div className="chapterGrid">
-            <div className="chapter" data-reveal><div className="chapterMeta"><span>ACT II</span><span>THE OBJECT</span><span>02 / 04</span></div><div className="mediaShell"><div className="media mediaModel"><iframe title="Urban Ponics Tower interactive 3D" src={SKETCHFAB_TOWER} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="eager" /></div><span className="mediaStatus">LIVE 3D · AUTO-LOADED</span></div><div className="chapterCopy"><b>Tower</b><span>Sketchfab</span></div></div>
-            <div className="chapter chapterOffset" data-reveal><div className="chapterMeta"><span>ACT III</span><span>THE SYSTEM</span><span>03 / 04</span></div><div className="mediaShell"><div className="media mediaModel"><iframe title="Urban Ponics NFT System interactive 3D" src={SKETCHFAB_NFT} allow="autoplay; fullscreen; xr-spatial-tracking" allowFullScreen loading="eager" /></div><span className="mediaStatus">LIVE 3D · AUTO-LOADED</span></div><div className="chapterCopy"><b>NFT System</b><span>Sketchfab</span></div></div>
+            <div className="chapter" data-reveal><div className="chapterMeta"><span>ACT II</span><span>THE OBJECT</span><span>02 / 04</span></div><div className="mediaShell"><div className="media mediaModel"><DeferredEmbed title="Urban Ponics Tower interactive 3D" src={SKETCHFAB_TOWER} allow="autoplay; fullscreen; xr-spatial-tracking" label="Load Tower 3D" /></div><span className="mediaStatus">INTERACTIVE 3D · ON DEMAND</span></div><div className="chapterCopy"><b>Tower</b><span>Sketchfab</span></div></div>
+            <div className="chapter chapterOffset" data-reveal><div className="chapterMeta"><span>ACT III</span><span>THE SYSTEM</span><span>03 / 04</span></div><div className="mediaShell"><div className="media mediaModel"><DeferredEmbed title="Urban Ponics NFT System interactive 3D" src={SKETCHFAB_NFT} allow="autoplay; fullscreen; xr-spatial-tracking" label="Load NFT System 3D" /></div><span className="mediaStatus">INTERACTIVE 3D · ON DEMAND</span></div><div className="chapterCopy"><b>NFT System</b><span>Sketchfab</span></div></div>
           </div>
-          <div className="chapter chapterPanorama" data-reveal><div className="chapterMeta"><span>ACT IV</span><span>THE SPACE</span><span>04 / 04</span></div><div className="mediaShell"><div className="media mediaPano"><iframe title="Urban Ponics Twinmotion panorama" src={TWINMOTION} allow="fullscreen; accelerometer; gyroscope" allowFullScreen loading="lazy" /></div><span className="mediaStatus">IMMERSIVE 360º</span></div><div className="chapterCopy"><b>Enter the environment</b><span>Twinmotion</span></div></div>
+          <div className="chapter chapterPanorama" data-reveal><div className="chapterMeta"><span>ACT IV</span><span>THE SPACE</span><span>04 / 04</span></div><div className="mediaShell"><div className="media mediaPano"><DeferredEmbed title="Urban Ponics Twinmotion panorama" src={TWINMOTION} allow="fullscreen; accelerometer; gyroscope" label="Enter the 360º environment" /></div><span className="mediaStatus">IMMERSIVE 360º · ON DEMAND</span></div><div className="chapterCopy"><b>Enter the environment</b><span>Twinmotion</span></div></div>
         </article>
       </section>
 
