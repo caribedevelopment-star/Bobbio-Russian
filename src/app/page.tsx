@@ -216,7 +216,9 @@ export default function Home() {
 
       <SectionBridge no="02" next="Selected Work" caption="From practice to proof" />
 
-      <CinematicGallery />\n\n      <section id="urban-detail" className="work workDetail sectionPad sectionFx">
+      <CinematicGallery />
+
+      <section id="urban-detail" className="work workDetail sectionPad sectionFx">
         <article className="urbanCase">
           <div className="urbanTitle" data-reveal><div><p className="micro accentText">FEATURED CASE STUDY · BIO-DESIGN</p><h3>URBAN<br />PONICS</h3></div><p>A living-system project told as a continuous sequence: film, object, system and space. The media is loaded into the narrative instead of sitting outside it.</p></div>
           <div className="chapter" data-reveal><div className="chapterMeta"><span>ACT I</span><span>THE FILM</span><span>01 / 04</span></div><div className="mediaShell mediaShellHero"><div className="media mediaFilm"><iframe title="Urban Ponics film" src={VIMEO} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen loading="lazy" /></div><span className="mediaStatus">LIVE FILM · AUTOPLAY</span></div></div>
